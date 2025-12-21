@@ -1,13 +1,16 @@
 # IntelliJ
-**/.idea/
-**/*.iml
+.idea/
+*.iml
 
-# Maven
+# Maven / Java
 **/target/
+**/.classpath
+**/.project
+**/.settings/
 
 # OS
 .DS_Store
 Thumbs.db
 
 # Logs
-**/*.log
+*.log
