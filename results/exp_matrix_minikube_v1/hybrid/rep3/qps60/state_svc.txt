@@ -1,0 +1,4 @@
+﻿NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE   SELECTOR
+gateway-service   NodePort    10.105.103.134   <none>        8081:30081/TCP   12d   app=gateway-service
+order-service     ClusterIP   10.108.40.80     <none>        8082/TCP         12d   app=order-service
+product-service   ClusterIP   10.107.63.241    <none>        8080/TCP         12d   app=product-service

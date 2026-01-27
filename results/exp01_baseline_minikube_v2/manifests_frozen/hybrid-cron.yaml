@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hybrid-set-min-high
+  namespace: minishop
+  labels:
+    app.kubernetes.io/part-of: minishop-autoscaling
+    autoscaling.strategy: hybrid
+spec:
+  schedule: "0 * * * *"
+  suspend: false
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: autoscaler-sa
+          restartPolicy: Never
+          containers:
+            - name: kubectl
+              image: minishop/kubectl:1.34
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  kubectl -n minishop patch hpa gateway-hpa --type=merge -p '{"spec":{"minReplicas":3}}'
+                  kubectl -n minishop patch hpa order-hpa   --type=merge -p '{"spec":{"minReplicas":2}}'
+                  kubectl -n minishop patch hpa product-hpa --type=merge -p '{"spec":{"minReplicas":2}}'
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hybrid-set-min-low
+  namespace: minishop
+  labels:
+    app.kubernetes.io/part-of: minishop-autoscaling
+    autoscaling.strategy: hybrid
+spec:
+  schedule: "30 * * * *"
+  suspend: false
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: autoscaler-sa
+          restartPolicy: Never
+          containers:
+            - name: kubectl
+              image: minishop/kubectl:1.34
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  kubectl -n minishop patch hpa gateway-hpa --type=merge -p '{"spec":{"minReplicas":1}}'
+                  kubectl -n minishop patch hpa order-hpa   --type=merge -p '{"spec":{"minReplicas":1}}'
+                  kubectl -n minishop patch hpa product-hpa --type=merge -p '{"spec":{"minReplicas":1}}'
+
+

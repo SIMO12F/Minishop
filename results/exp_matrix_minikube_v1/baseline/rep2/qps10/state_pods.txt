@@ -1,0 +1,4 @@
+﻿NAME                               READY   STATUS    RESTARTS       AGE    IP             NODE       NOMINATED NODE   READINESS GATES
+gateway-service-68ff9dfb68-kmm59   1/1     Running   1 (145m ago)   28h    10.244.2.144   minikube   <none>           <none>
+order-service-578dc67d78-bffmv     1/1     Running   1 (145m ago)   28h    10.244.2.145   minikube   <none>           <none>
+product-service-5b66b9564b-h8x4v   1/1     Running   1 (146m ago)   157m   10.244.2.140   minikube   <none>           <none>

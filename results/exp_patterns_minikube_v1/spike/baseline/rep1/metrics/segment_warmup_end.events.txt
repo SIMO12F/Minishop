@@ -1,0 +1,10 @@
+﻿LAST SEEN   TYPE     REASON      OBJECT                       MESSAGE
+21s         Normal   Scheduled   pod/nettest                  Successfully assigned minishop/nettest to minikube
+20s         Normal   Pulled      pod/nettest                  Container image "busybox:1.36" already present on machine
+20s         Normal   Created     pod/nettest                  Created container: nettest
+20s         Normal   Started     pod/nettest                  Started container nettest
+15s         Normal   Scheduled   pod/fortio-warmup-f7ad20e4   Successfully assigned minishop/fortio-warmup-f7ad20e4 to minikube
+13s         Normal   Pulling     pod/fortio-warmup-f7ad20e4   Pulling image "fortio/fortio:latest"
+12s         Normal   Pulled      pod/fortio-warmup-f7ad20e4   Successfully pulled image "fortio/fortio:latest" in 1.49s (1.49s including waiting). Image size: 19001528 bytes.
+12s         Normal   Created     pod/fortio-warmup-f7ad20e4   Created container: fortio-warmup-f7ad20e4
+11s         Normal   Started     pod/fortio-warmup-f7ad20e4   Started container fortio-warmup-f7ad20e4

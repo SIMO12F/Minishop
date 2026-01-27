@@ -1,0 +1,3 @@
+﻿NAME                  SCHEDULE     TIMEZONE   SUSPEND   ACTIVE   LAST SCHEDULE   AGE     CONTAINERS   IMAGES                  SELECTOR
+minishop-scale-down   30 * * * *   <none>     False     0        <none>          3m40s   kubectl      minishop/kubectl:1.34   <none>
+minishop-scale-up     0 * * * *    <none>     False     0        58s             3m40s   kubectl      minishop/kubectl:1.34   <none>

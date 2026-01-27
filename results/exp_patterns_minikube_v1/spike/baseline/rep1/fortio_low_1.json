@@ -1,0 +1,271 @@
+﻿Fortio 1.73.2 running at 10 queries per second, 12->12 procs, for 1m0s: http://gateway-service:8081/actuator/health
+Aggregated Function Time : count 600 avg 0.0021608558 +/- 0.001041 min 0.001209894 max 0.00877786 sum 1.29651349
+# target 50% 0.00190677
+# target 75% 0.00247619
+# target 90% 0.0028658
+# target 99% 0.00819446
+# target 99.9% 0.00871952
+Error cases : count 0 avg 0 +/- 0 min 0 max 0 sum 0
+# Socket and IP used for each connection:
+[0]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.002532401 +/- 0 min 0.002532401 max 0.002532401 sum 0.002532401
+[1]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.003219965 +/- 0 min 0.003219965 max 0.003219965 sum 0.003219965
+[2]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.001556065 +/- 0 min 0.001556065 max 0.001556065 sum 0.001556065
+[3]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.000807758 +/- 0 min 0.000807758 max 0.000807758 sum 0.000807758
+[4]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.000969812 +/- 0 min 0.000969812 max 0.000969812 sum 0.000969812
+[5]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.003279548 +/- 0 min 0.003279548 max 0.003279548 sum 0.003279548
+[6]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.001993239 +/- 0 min 0.001993239 max 0.001993239 sum 0.001993239
+[7]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.002780523 +/- 0 min 0.002780523 max 0.002780523 sum 0.002780523
+[8]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.002256222 +/- 0 min 0.002256222 max 0.002256222 sum 0.002256222
+[9]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.001065741 +/- 0 min 0.001065741 max 0.001065741 sum 0.001065741
+Sockets used: 10 (for perfect keepalive, would be 10)
+Uniform: false, Jitter: false, Catchup allowed: true
+IP addresses distribution:
+10.105.103.134:8081: 10
+Code 200 : 600 (100.0 %)
+All done 600 calls (plus 10 warmup) 2.161 ms avg, 10.0 qps
+Successfully wrote 4665 bytes of Json data to stdout
+{
+  "RunType": "HTTP",
+  "Labels": "gateway-service:8081/actuator/health , fortio-low-1-e12738cd",
+  "StartTime": "2026-01-25T02:07:45.968301877Z",
+  "RequestedQPS": "10",
+  "RequestedDuration": "1m0s",
+  "ActualQPS": 9.999444882650572,
+  "ActualDuration": 60003330889,
+  "NumThreads": 10,
+  "Version": "1.73.2",
+  "DurationHistogram": {
+    "Count": 600,
+    "Min": 0.001209894,
+    "Max": 0.00877786,
+    "Sum": 1.296513493,
+    "Avg": 0.0021608558216666667,
+    "StdDev": 0.0010412126694492468,
+    "Data": [
+      {
+        "Start": 0.001209894,
+        "End": 0.002,
+        "Percent": 56.666666666666664,
+        "Count": 340
+      },
+      {
+        "Start": 0.002,
+        "End": 0.003,
+        "Percent": 95.16666666666667,
+        "Count": 231
+      },
+      {
+        "Start": 0.003,
+        "End": 0.004,
+        "Percent": 96.83333333333333,
+        "Count": 10
+      },
+      {
+        "Start": 0.004,
+        "End": 0.005,
+        "Percent": 97,
+        "Count": 1
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 97.16666666666667,
+        "Count": 1
+      },
+      {
+        "Start": 0.006,
+        "End": 0.007,
+        "Percent": 97.66666666666667,
+        "Count": 3
+      },
+      {
+        "Start": 0.007,
+        "End": 0.008,
+        "Percent": 98.66666666666667,
+        "Count": 6
+      },
+      {
+        "Start": 0.008,
+        "End": 0.00877786,
+        "Percent": 100,
+        "Count": 8
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.0019067721533923305
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.0024761904761904764
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.002865800865800866
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.008194464999999998
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.008719520500000003
+      }
+    ]
+  },
+  "ErrorsDurationHistogram": {
+    "Count": 0,
+    "Min": 0,
+    "Max": 0,
+    "Sum": 0,
+    "Avg": 0,
+    "StdDev": 0,
+    "Data": null
+  },
+  "Exactly": 0,
+  "Jitter": false,
+  "Uniform": false,
+  "NoCatchUp": false,
+  "RunID": 0,
+  "AccessLoggerInfo": "",
+  "ID": "2026-01-25-020745_gateway_service_8081_actuator_health_fortio_low_1_e12738cd",
+  "RetCodes": {
+    "200": 600
+  },
+  "IPCountMap": {
+    "10.105.103.134:8081": 10
+  },
+  "Insecure": false,
+  "MTLS": false,
+  "CACert": "",
+  "Cert": "",
+  "Key": "",
+  "UnixDomainSocket": "",
+  "URL": "http://gateway-service:8081/actuator/health",
+  "NumConnections": 1,
+  "Compression": false,
+  "DisableFastClient": false,
+  "HTTP10": false,
+  "H2": false,
+  "DisableKeepAlive": false,
+  "AllowHalfClose": false,
+  "FollowRedirects": false,
+  "Resolve": "",
+  "HTTPReqTimeOut": 3000000000,
+  "UserCredentials": "",
+  "ContentType": "",
+  "Payload": "",
+  "MethodOverride": "",
+  "LogErrors": true,
+  "SequentialWarmup": false,
+  "ConnReuseRange": [
+    0,
+    0
+  ],
+  "NoResolveEachConn": false,
+  "Offset": 0,
+  "Resolution": 0.001,
+  "Sizes": {
+    "Count": 600,
+    "Min": 202,
+    "Max": 202,
+    "Sum": 121200,
+    "Avg": 202,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 202,
+        "End": 202,
+        "Percent": 100,
+        "Count": 600
+      }
+    ]
+  },
+  "HeaderSizes": {
+    "Count": 600,
+    "Min": 142,
+    "Max": 142,
+    "Sum": 85200,
+    "Avg": 142,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 142,
+        "End": 142,
+        "Percent": 100,
+        "Count": 600
+      }
+    ]
+  },
+  "Sockets": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "SocketCount": 10,
+  "ConnectionStats": {
+    "Count": 10,
+    "Min": 0.000807758,
+    "Max": 0.003279548,
+    "Sum": 0.020461273999999998,
+    "Avg": 0.0020461273999999997,
+    "StdDev": 0.0008726562429256099,
+    "Data": [
+      {
+        "Start": 0.000807758,
+        "End": 0.001,
+        "Percent": 20,
+        "Count": 2
+      },
+      {
+        "Start": 0.001,
+        "End": 0.002,
+        "Percent": 50,
+        "Count": 3
+      },
+      {
+        "Start": 0.002,
+        "End": 0.003,
+        "Percent": 80,
+        "Count": 3
+      },
+      {
+        "Start": 0.003,
+        "End": 0.003279548,
+        "Percent": 100,
+        "Count": 2
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.002
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.0028333333333333335
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.003139774
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.0032655706
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.0032781502600000003
+      }
+    ]
+  },
+  "AbortOn": 0
+}

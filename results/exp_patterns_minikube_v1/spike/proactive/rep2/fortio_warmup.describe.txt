@@ -1,0 +1,68 @@
+﻿Name:             fortio-warmup-f53a09cd
+Namespace:        minishop
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Sun, 25 Jan 2026 04:00:56 +0100
+Labels:           run=fortio-warmup-f53a09cd
+Annotations:      <none>
+Status:           Succeeded
+IP:               10.244.3.216
+IPs:
+  IP:  10.244.3.216
+Containers:
+  fortio-warmup-f53a09cd:
+    Container ID:  docker://99e202980cc95f9cd3bcd032e2be0d4d846a21d55786d9607a7c64a5be267530
+    Image:         fortio/fortio:latest
+    Image ID:      docker-pullable://fortio/fortio@sha256:78120cc988516b4dd471dbbd8b495a20a1bf616b04adaf283eb87d8b5b867ec6
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      load
+      -qps
+      10
+      -t
+      5s
+      -c
+      10
+      -json
+      -
+      -quiet
+      -logger-json=false
+      http://gateway-service:8081/actuator/health
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Sun, 25 Jan 2026 04:01:09 +0100
+      Finished:     Sun, 25 Jan 2026 04:01:17 +0100
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-scw7c (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-scw7c:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  30s   default-scheduler  Successfully assigned minishop/fortio-warmup-f53a09cd to minikube
+  Normal  Pulling    21s   kubelet            Pulling image "fortio/fortio:latest"
+  Normal  Pulled     18s   kubelet            Successfully pulled image "fortio/fortio:latest" in 2.818s (2.818s including waiting). Image size: 19001528 bytes.
+  Normal  Created    17s   kubelet            Created container: fortio-warmup-f53a09cd
+  Normal  Started    15s   kubelet            Started container fortio-warmup-f53a09cd

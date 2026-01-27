@@ -1,0 +1,9 @@
+﻿NAME                              READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS        IMAGES                         SELECTOR
+deployment.apps/gateway-service   1/1     1            1           11d   gateway-service   minishop/gateway-service:0.1   app=gateway-service
+deployment.apps/order-service     1/1     1            1           11d   order-service     minishop/order-service:0.1     app=order-service
+deployment.apps/product-service   1/1     1            1           11d   product-service   minishop/product-service:0.1   app=product-service
+
+NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE   SELECTOR
+service/gateway-service   NodePort    10.105.103.134   <none>        8081:30081/TCP   11d   app=gateway-service
+service/order-service     ClusterIP   10.108.40.80     <none>        8082/TCP         11d   app=order-service
+service/product-service   ClusterIP   10.107.63.241    <none>        8080/TCP         11d   app=product-service

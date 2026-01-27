@@ -1,0 +1,7 @@
+﻿LAST SEEN   TYPE     REASON      OBJECT                       MESSAGE
+9s          Normal   Scheduled   pod/nettest                  Successfully assigned minishop/nettest to minikube
+8s          Normal   Pulled      pod/nettest                  Container image "busybox:1.36" already present on machine
+8s          Normal   Created     pod/nettest                  Created container: nettest
+8s          Normal   Started     pod/nettest                  Started container nettest
+3s          Normal   Scheduled   pod/fortio-warmup-f7ad20e4   Successfully assigned minishop/fortio-warmup-f7ad20e4 to minikube
+1s          Normal   Pulling     pod/fortio-warmup-f7ad20e4   Pulling image "fortio/fortio:latest"

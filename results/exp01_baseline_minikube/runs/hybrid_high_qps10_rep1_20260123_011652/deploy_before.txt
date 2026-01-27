@@ -1,0 +1,4 @@
+﻿NAME              READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS        IMAGES                         SELECTOR
+gateway-service   3/3     3            3           11d   gateway-service   minishop/gateway-service:0.1   app=gateway-service
+order-service     2/2     2            2           11d   order-service     minishop/order-service:0.1     app=order-service
+product-service   2/2     2            2           11d   product-service   minishop/product-service:0.1   app=product-service

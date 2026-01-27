@@ -1,0 +1,5 @@
+﻿NAME                               READY   STATUS              RESTARTS     AGE    IP            NODE       NOMINATED NODE   READINESS GATES
+fortio-low-1-d74c3582              0/1     ContainerCreating   0            1s     <none>        minikube   <none>           <none>
+gateway-service-68ff9dfb68-kmm59   1/1     Running             2 (8h ago)   2d3h   10.244.3.22   minikube   <none>           <none>
+order-service-578dc67d78-bffmv     1/1     Running             2 (8h ago)   2d3h   10.244.3.21   minikube   <none>           <none>
+product-service-5b66b9564b-pklfg   1/1     Running             0            8h     10.244.3.32   minikube   <none>           <none>

@@ -1,0 +1,320 @@
+﻿apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "3"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app.kubernetes.io/name":"gateway-service"},"name":"gateway-service","namespace":"minishop"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"gateway-service"}},"template":{"metadata":{"labels":{"app":"gateway-service","app.kubernetes.io/name":"gateway-service"}},"spec":{"containers":[{"envFrom":[{"configMapRef":{"name":"gateway-config"}}],"image":"minishop/gateway-service:0.1","imagePullPolicy":"IfNotPresent","livenessProbe":{"httpGet":{"path":"/actuator/health/liveness","port":8081},"initialDelaySeconds":20,"periodSeconds":10},"name":"gateway-service","ports":[{"containerPort":8081}],"readinessProbe":{"httpGet":{"path":"/actuator/health/readiness","port":8081},"initialDelaySeconds":10,"periodSeconds":5},"resources":{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"startupProbe":{"failureThreshold":30,"httpGet":{"path":"/actuator/health","port":8081},"periodSeconds":5}}],"terminationGracePeriodSeconds":10}}}}
+    creationTimestamp: "2026-01-11T22:46:46Z"
+    generation: 126
+    labels:
+      app.kubernetes.io/name: gateway-service
+    name: gateway-service
+    namespace: minishop
+    resourceVersion: "135899"
+    uid: 240e00a3-8204-4564-a05f-70795f548ae8
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: gateway-service
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-12T01:32:13+01:00"
+        labels:
+          app: gateway-service
+          app.kubernetes.io/name: gateway-service
+      spec:
+        containers:
+        - envFrom:
+          - configMapRef:
+              name: gateway-config
+          image: minishop/gateway-service:0.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: gateway-service
+          ports:
+          - containerPort: 8081
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /actuator/health
+              port: 8081
+              scheme: HTTP
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 10
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-01-11T23:46:43Z"
+      lastUpdateTime: "2026-01-12T00:33:02Z"
+      message: ReplicaSet "gateway-service-68ff9dfb68" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2026-01-23T00:05:04Z"
+      lastUpdateTime: "2026-01-23T00:05:04Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 126
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "3"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app.kubernetes.io/name":"order-service"},"name":"order-service","namespace":"minishop"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"order-service"}},"template":{"metadata":{"labels":{"app":"order-service","app.kubernetes.io/name":"order-service"}},"spec":{"containers":[{"image":"minishop/order-service:0.1","imagePullPolicy":"IfNotPresent","livenessProbe":{"httpGet":{"path":"/actuator/health/liveness","port":8082},"initialDelaySeconds":20,"periodSeconds":10},"name":"order-service","ports":[{"containerPort":8082}],"readinessProbe":{"httpGet":{"path":"/actuator/health/readiness","port":8082},"initialDelaySeconds":10,"periodSeconds":5},"resources":{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"startupProbe":{"failureThreshold":30,"httpGet":{"path":"/actuator/health","port":8082},"periodSeconds":5}}],"terminationGracePeriodSeconds":10}}}}
+    creationTimestamp: "2026-01-11T22:46:46Z"
+    generation: 109
+    labels:
+      app.kubernetes.io/name: order-service
+    name: order-service
+    namespace: minishop
+    resourceVersion: "135881"
+    uid: d684f381-6a91-4716-aa05-de1f1c91b069
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: order-service
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-12T01:32:13+01:00"
+        labels:
+          app: order-service
+          app.kubernetes.io/name: order-service
+      spec:
+        containers:
+        - image: minishop/order-service:0.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8082
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: order-service
+          ports:
+          - containerPort: 8082
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8082
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /actuator/health
+              port: 8082
+              scheme: HTTP
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 10
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-01-11T23:46:43Z"
+      lastUpdateTime: "2026-01-12T00:32:57Z"
+      message: ReplicaSet "order-service-578dc67d78" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2026-01-23T00:02:49Z"
+      lastUpdateTime: "2026-01-23T00:02:49Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 109
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "3"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app.kubernetes.io/name":"product-service"},"name":"product-service","namespace":"minishop"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"product-service"}},"template":{"metadata":{"labels":{"app":"product-service","app.kubernetes.io/name":"product-service"}},"spec":{"containers":[{"image":"minishop/product-service:0.1","imagePullPolicy":"IfNotPresent","livenessProbe":{"httpGet":{"path":"/actuator/health/liveness","port":8080},"initialDelaySeconds":20,"periodSeconds":10},"name":"product-service","ports":[{"containerPort":8080}],"readinessProbe":{"httpGet":{"path":"/actuator/health/readiness","port":8080},"initialDelaySeconds":10,"periodSeconds":5},"resources":{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"startupProbe":{"failureThreshold":30,"httpGet":{"path":"/actuator/health","port":8080},"periodSeconds":5}}],"terminationGracePeriodSeconds":10}}}}
+    creationTimestamp: "2026-01-11T22:46:46Z"
+    generation: 115
+    labels:
+      app.kubernetes.io/name: product-service
+    name: product-service
+    namespace: minishop
+    resourceVersion: "135868"
+    uid: e5c232fd-4dc8-4db1-bd24-0790a6762a6f
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: product-service
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-12T01:32:13+01:00"
+        labels:
+          app: product-service
+          app.kubernetes.io/name: product-service
+      spec:
+        containers:
+        - image: minishop/product-service:0.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: product-service
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 10
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-01-11T23:46:43Z"
+      lastUpdateTime: "2026-01-12T00:32:57Z"
+      message: ReplicaSet "product-service-5b66b9564b" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2026-01-23T00:02:49Z"
+      lastUpdateTime: "2026-01-23T00:02:49Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 115
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+kind: List
+metadata:
+  resourceVersion: ""

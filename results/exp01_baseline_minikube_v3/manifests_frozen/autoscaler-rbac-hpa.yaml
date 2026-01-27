@@ -1,0 +1,24 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: autoscaler-role-hpa
+  namespace: minishop
+rules:
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: autoscaler-rb-hpa
+  namespace: minishop
+subjects:
+  - kind: ServiceAccount
+    name: autoscaler-sa
+    namespace: minishop
+roleRef:
+  kind: Role
+  name: autoscaler-role-hpa
+  apiGroup: rbac.authorization.k8s.io
+

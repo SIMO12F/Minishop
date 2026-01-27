@@ -1,0 +1,103 @@
+﻿apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app.kubernetes.io/name":"gateway-service"},"name":"gateway-service","namespace":"minishop"},"spec":{"ports":[{"name":"http","nodePort":30081,"port":8081,"targetPort":8081}],"selector":{"app":"gateway-service"},"type":"NodePort"}}
+    creationTimestamp: "2026-01-11T22:46:46Z"
+    labels:
+      app.kubernetes.io/name: gateway-service
+    name: gateway-service
+    namespace: minishop
+    resourceVersion: "712"
+    uid: 2b5be298-9d51-4c72-821c-0b178161b97d
+  spec:
+    clusterIP: 10.105.103.134
+    clusterIPs:
+    - 10.105.103.134
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      nodePort: 30081
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+    selector:
+      app: gateway-service
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app.kubernetes.io/name":"order-service"},"name":"order-service","namespace":"minishop"},"spec":{"ports":[{"name":"http","port":8082,"targetPort":8082}],"selector":{"app":"order-service"},"type":"ClusterIP"}}
+    creationTimestamp: "2026-01-11T22:46:46Z"
+    labels:
+      app.kubernetes.io/name: order-service
+    name: order-service
+    namespace: minishop
+    resourceVersion: "690"
+    uid: 7e1de88c-38dc-4fe4-be29-ff3b4d32caaa
+  spec:
+    clusterIP: 10.108.40.80
+    clusterIPs:
+    - 10.108.40.80
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 8082
+      protocol: TCP
+      targetPort: 8082
+    selector:
+      app: order-service
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app.kubernetes.io/name":"product-service"},"name":"product-service","namespace":"minishop"},"spec":{"ports":[{"name":"http","port":8080,"targetPort":8080}],"selector":{"app":"product-service"},"type":"ClusterIP"}}
+    creationTimestamp: "2026-01-11T22:46:46Z"
+    labels:
+      app.kubernetes.io/name: product-service
+    name: product-service
+    namespace: minishop
+    resourceVersion: "672"
+    uid: 7ce2f28d-37ae-4cdd-91aa-cfa2c58648f4
+  spec:
+    clusterIP: 10.107.63.241
+    clusterIPs:
+    - 10.107.63.241
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: product-service
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: List
+metadata:
+  resourceVersion: ""

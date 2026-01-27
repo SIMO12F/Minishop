@@ -1,0 +1,2 @@
+﻿minikube version: v1.37.0
+commit: 65318f4cfff9c12cc87ec9eb8f4cdd57b25047f3

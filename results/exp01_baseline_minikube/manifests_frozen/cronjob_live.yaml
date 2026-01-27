@@ -1,0 +1,205 @@
+﻿apiVersion: v1
+items:
+- apiVersion: batch/v1
+  kind: CronJob
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"batch/v1","kind":"CronJob","metadata":{"annotations":{},"labels":{"app.kubernetes.io/part-of":"minishop-autoscaling","autoscaling.strategy":"hybrid"},"name":"hybrid-set-min-high","namespace":"minishop"},"spec":{"concurrencyPolicy":"Forbid","failedJobsHistoryLimit":2,"jobTemplate":{"spec":{"template":{"spec":{"containers":[{"command":["/bin/sh","-c","kubectl -n minishop patch hpa gateway-hpa --type=merge -p '{\"spec\":{\"minReplicas\":3}}'\nkubectl -n minishop patch hpa order-hpa   --type=merge -p '{\"spec\":{\"minReplicas\":2}}'\nkubectl -n minishop patch hpa product-hpa --type=merge -p '{\"spec\":{\"minReplicas\":2}}'\n"],"image":"minishop/kubectl:1.34","imagePullPolicy":"IfNotPresent","name":"kubectl"}],"restartPolicy":"Never","serviceAccountName":"autoscaler-sa"}}}},"schedule":"0 * * * *","successfulJobsHistoryLimit":1,"suspend":false}}
+    creationTimestamp: "2026-01-15T22:32:38Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/part-of: minishop-autoscaling
+      autoscaling.strategy: hybrid
+    name: hybrid-set-min-high
+    namespace: minishop
+    resourceVersion: "134879"
+    uid: 478156f9-9b17-496a-937f-5c95b35abecc
+  spec:
+    concurrencyPolicy: Forbid
+    failedJobsHistoryLimit: 2
+    jobTemplate:
+      metadata: {}
+      spec:
+        template:
+          metadata: {}
+          spec:
+            containers:
+            - command:
+              - /bin/sh
+              - -c
+              - |
+                kubectl -n minishop patch hpa gateway-hpa --type=merge -p '{"spec":{"minReplicas":3}}'
+                kubectl -n minishop patch hpa order-hpa   --type=merge -p '{"spec":{"minReplicas":2}}'
+                kubectl -n minishop patch hpa product-hpa --type=merge -p '{"spec":{"minReplicas":2}}'
+              image: minishop/kubectl:1.34
+              imagePullPolicy: IfNotPresent
+              name: kubectl
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+            dnsPolicy: ClusterFirst
+            restartPolicy: Never
+            schedulerName: default-scheduler
+            securityContext: {}
+            serviceAccount: autoscaler-sa
+            serviceAccountName: autoscaler-sa
+            terminationGracePeriodSeconds: 30
+    schedule: 0 * * * *
+    successfulJobsHistoryLimit: 1
+    suspend: false
+  status:
+    lastScheduleTime: "2026-01-23T00:00:00Z"
+    lastSuccessfulTime: "2026-01-23T00:01:55Z"
+- apiVersion: batch/v1
+  kind: CronJob
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"batch/v1","kind":"CronJob","metadata":{"annotations":{},"labels":{"app.kubernetes.io/part-of":"minishop-autoscaling","autoscaling.strategy":"hybrid"},"name":"hybrid-set-min-low","namespace":"minishop"},"spec":{"concurrencyPolicy":"Forbid","failedJobsHistoryLimit":2,"jobTemplate":{"spec":{"template":{"spec":{"containers":[{"command":["/bin/sh","-c","kubectl -n minishop patch hpa gateway-hpa --type=merge -p '{\"spec\":{\"minReplicas\":1}}'\nkubectl -n minishop patch hpa order-hpa   --type=merge -p '{\"spec\":{\"minReplicas\":1}}'\nkubectl -n minishop patch hpa product-hpa --type=merge -p '{\"spec\":{\"minReplicas\":1}}'\n"],"image":"minishop/kubectl:1.34","imagePullPolicy":"IfNotPresent","name":"kubectl"}],"restartPolicy":"Never","serviceAccountName":"autoscaler-sa"}}}},"schedule":"30 * * * *","successfulJobsHistoryLimit":1,"suspend":false}}
+    creationTimestamp: "2026-01-15T22:32:38Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/part-of: minishop-autoscaling
+      autoscaling.strategy: hybrid
+    name: hybrid-set-min-low
+    namespace: minishop
+    resourceVersion: "132946"
+    uid: 1e58bdf9-94e7-4094-a5e6-f9fd7f2d35e4
+  spec:
+    concurrencyPolicy: Forbid
+    failedJobsHistoryLimit: 2
+    jobTemplate:
+      metadata: {}
+      spec:
+        template:
+          metadata: {}
+          spec:
+            containers:
+            - command:
+              - /bin/sh
+              - -c
+              - |
+                kubectl -n minishop patch hpa gateway-hpa --type=merge -p '{"spec":{"minReplicas":1}}'
+                kubectl -n minishop patch hpa order-hpa   --type=merge -p '{"spec":{"minReplicas":1}}'
+                kubectl -n minishop patch hpa product-hpa --type=merge -p '{"spec":{"minReplicas":1}}'
+              image: minishop/kubectl:1.34
+              imagePullPolicy: IfNotPresent
+              name: kubectl
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+            dnsPolicy: ClusterFirst
+            restartPolicy: Never
+            schedulerName: default-scheduler
+            securityContext: {}
+            serviceAccount: autoscaler-sa
+            serviceAccountName: autoscaler-sa
+            terminationGracePeriodSeconds: 30
+    schedule: 30 * * * *
+    successfulJobsHistoryLimit: 1
+    suspend: false
+  status:
+    lastScheduleTime: "2026-01-22T23:30:00Z"
+    lastSuccessfulTime: "2026-01-22T23:30:08Z"
+- apiVersion: batch/v1
+  kind: CronJob
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"batch/v1","kind":"CronJob","metadata":{"annotations":{},"labels":{"app.kubernetes.io/part-of":"minishop-autoscaling","autoscaling.strategy":"proactive"},"name":"minishop-scale-down","namespace":"minishop"},"spec":{"concurrencyPolicy":"Forbid","failedJobsHistoryLimit":2,"jobTemplate":{"spec":{"template":{"spec":{"containers":[{"command":["/bin/sh","-c","kubectl -n minishop scale deployment gateway-service --replicas=1\nkubectl -n minishop scale deployment order-service --replicas=1\nkubectl -n minishop scale deployment product-service --replicas=1\n"],"image":"minishop/kubectl:1.34","imagePullPolicy":"IfNotPresent","name":"kubectl"}],"restartPolicy":"Never","serviceAccountName":"autoscaler-sa"}}}},"schedule":"30 * * * *","successfulJobsHistoryLimit":1,"suspend":false}}
+    creationTimestamp: "2026-01-23T00:01:46Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/part-of: minishop-autoscaling
+      autoscaling.strategy: proactive
+    name: minishop-scale-down
+    namespace: minishop
+    resourceVersion: "134840"
+    uid: e155d28a-c5ab-4abf-be8a-98b869f25c58
+  spec:
+    concurrencyPolicy: Forbid
+    failedJobsHistoryLimit: 2
+    jobTemplate:
+      metadata: {}
+      spec:
+        template:
+          metadata: {}
+          spec:
+            containers:
+            - command:
+              - /bin/sh
+              - -c
+              - |
+                kubectl -n minishop scale deployment gateway-service --replicas=1
+                kubectl -n minishop scale deployment order-service --replicas=1
+                kubectl -n minishop scale deployment product-service --replicas=1
+              image: minishop/kubectl:1.34
+              imagePullPolicy: IfNotPresent
+              name: kubectl
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+            dnsPolicy: ClusterFirst
+            restartPolicy: Never
+            schedulerName: default-scheduler
+            securityContext: {}
+            serviceAccount: autoscaler-sa
+            serviceAccountName: autoscaler-sa
+            terminationGracePeriodSeconds: 30
+    schedule: 30 * * * *
+    successfulJobsHistoryLimit: 1
+    suspend: false
+  status: {}
+- apiVersion: batch/v1
+  kind: CronJob
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"batch/v1","kind":"CronJob","metadata":{"annotations":{},"labels":{"app.kubernetes.io/part-of":"minishop-autoscaling","autoscaling.strategy":"proactive"},"name":"minishop-scale-up","namespace":"minishop"},"spec":{"concurrencyPolicy":"Forbid","failedJobsHistoryLimit":2,"jobTemplate":{"spec":{"template":{"spec":{"containers":[{"command":["/bin/sh","-c","kubectl -n minishop scale deployment gateway-service --replicas=4\nkubectl -n minishop scale deployment order-service --replicas=3\nkubectl -n minishop scale deployment product-service --replicas=3\n"],"image":"minishop/kubectl:1.34","imagePullPolicy":"IfNotPresent","name":"kubectl"}],"restartPolicy":"Never","serviceAccountName":"autoscaler-sa"}}}},"schedule":"0 * * * *","successfulJobsHistoryLimit":1,"suspend":false}}
+    creationTimestamp: "2026-01-23T00:01:46Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/part-of: minishop-autoscaling
+      autoscaling.strategy: proactive
+    name: minishop-scale-up
+    namespace: minishop
+    resourceVersion: "134839"
+    uid: 173e227d-a2cc-4419-8509-0254c24d4e19
+  spec:
+    concurrencyPolicy: Forbid
+    failedJobsHistoryLimit: 2
+    jobTemplate:
+      metadata: {}
+      spec:
+        template:
+          metadata: {}
+          spec:
+            containers:
+            - command:
+              - /bin/sh
+              - -c
+              - |
+                kubectl -n minishop scale deployment gateway-service --replicas=4
+                kubectl -n minishop scale deployment order-service --replicas=3
+                kubectl -n minishop scale deployment product-service --replicas=3
+              image: minishop/kubectl:1.34
+              imagePullPolicy: IfNotPresent
+              name: kubectl
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+            dnsPolicy: ClusterFirst
+            restartPolicy: Never
+            schedulerName: default-scheduler
+            securityContext: {}
+            serviceAccount: autoscaler-sa
+            serviceAccountName: autoscaler-sa
+            terminationGracePeriodSeconds: 30
+    schedule: 0 * * * *
+    successfulJobsHistoryLimit: 1
+    suspend: false
+  status: {}
+kind: List
+metadata:
+  resourceVersion: ""

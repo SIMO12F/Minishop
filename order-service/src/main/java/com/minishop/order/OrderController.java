@@ -9,7 +9,14 @@ import java.util.List;
 public class OrderController {
 
     @GetMapping
-    public List<Order> getOrders() {
+    public List<Order> getOrders(
+            @RequestParam(name = "work", defaultValue = "0") long workMs,
+            @RequestParam(name = "tailEvery", defaultValue = "0") int tailEvery,
+            @RequestParam(name = "tailExtra", defaultValue = "0") long tailExtraMs
+    ) {
+        WorkSimulator.burnCpuMs(workMs);
+        WorkSimulator.maybeAddTail(tailEvery, tailExtraMs);
+
         return List.of(
                 new Order(1L, "Mohamed", 1299.99, "CREATED"),
                 new Order(2L, "Sara", 499.50, "PAID"),
@@ -18,7 +25,16 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public Order getOrderById(@PathVariable Long id) {
+    public Order getOrderById(
+            @PathVariable Long id,
+            @RequestParam(name = "work", defaultValue = "0") long workMs,
+            @RequestParam(name = "tailEvery", defaultValue = "0") int tailEvery,
+            @RequestParam(name = "tailExtra", defaultValue = "0") long tailExtraMs
+    ) {
+        WorkSimulator.burnCpuMs(workMs);
+        WorkSimulator.maybeAddTail(tailEvery, tailExtraMs);
+
         return new Order(id, "DemoCustomer", 123.45, "CREATED");
     }
 }
+

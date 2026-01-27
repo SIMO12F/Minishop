@@ -1,0 +1,30 @@
+﻿LAST SEEN   TYPE     REASON      OBJECT                       MESSAGE
+3m46s       Normal   Scheduled   pod/nettest                  Successfully assigned minishop/nettest to minikube
+3m45s       Normal   Created     pod/nettest                  Created container: nettest
+3m45s       Normal   Pulled      pod/nettest                  Container image "busybox:1.36" already present on machine
+3m45s       Normal   Started     pod/nettest                  Started container nettest
+3m40s       Normal   Scheduled   pod/fortio-warmup-f7ad20e4   Successfully assigned minishop/fortio-warmup-f7ad20e4 to minikube
+3m38s       Normal   Pulling     pod/fortio-warmup-f7ad20e4   Pulling image "fortio/fortio:latest"
+3m37s       Normal   Created     pod/fortio-warmup-f7ad20e4   Created container: fortio-warmup-f7ad20e4
+3m37s       Normal   Pulled      pod/fortio-warmup-f7ad20e4   Successfully pulled image "fortio/fortio:latest" in 1.49s (1.49s including waiting). Image size: 19001528 bytes.
+3m36s       Normal   Started     pod/fortio-warmup-f7ad20e4   Started container fortio-warmup-f7ad20e4
+3m23s       Normal   Scheduled   pod/fortio-low-1-de61f0c5    Successfully assigned minishop/fortio-low-1-de61f0c5 to minikube
+3m22s       Normal   Pulling     pod/fortio-low-1-de61f0c5    Pulling image "fortio/fortio:latest"
+3m20s       Normal   Started     pod/fortio-low-1-de61f0c5    Started container fortio-low-1-de61f0c5
+3m20s       Normal   Created     pod/fortio-low-1-de61f0c5    Created container: fortio-low-1-de61f0c5
+3m20s       Normal   Pulled      pod/fortio-low-1-de61f0c5    Successfully pulled image "fortio/fortio:latest" in 1.478s (1.478s including waiting). Image size: 19001528 bytes.
+2m11s       Normal   Scheduled   pod/fortio-spike-08a72f53    Successfully assigned minishop/fortio-spike-08a72f53 to minikube
+2m9s        Normal   Pulling     pod/fortio-spike-08a72f53    Pulling image "fortio/fortio:latest"
+2m7s        Normal   Started     pod/fortio-spike-08a72f53    Started container fortio-spike-08a72f53
+2m7s        Normal   Created     pod/fortio-spike-08a72f53    Created container: fortio-spike-08a72f53
+2m7s        Normal   Pulled      pod/fortio-spike-08a72f53    Successfully pulled image "fortio/fortio:latest" in 1.447s (1.447s including waiting). Image size: 19001528 bytes.
+88s         Normal   Scheduled   pod/fortio-low-2-7d35012f    Successfully assigned minishop/fortio-low-2-7d35012f to minikube
+87s         Normal   Pulling     pod/fortio-low-2-7d35012f    Pulling image "fortio/fortio:latest"
+86s         Normal   Pulled      pod/fortio-low-2-7d35012f    Successfully pulled image "fortio/fortio:latest" in 1.379s (1.379s including waiting). Image size: 19001528 bytes.
+85s         Normal   Started     pod/fortio-low-2-7d35012f    Started container fortio-low-2-7d35012f
+85s         Normal   Created     pod/fortio-low-2-7d35012f    Created container: fortio-low-2-7d35012f
+15s         Normal   Scheduled   pod/fortio-warmup-e0147c63   Successfully assigned minishop/fortio-warmup-e0147c63 to minikube
+14s         Normal   Pulling     pod/fortio-warmup-e0147c63   Pulling image "fortio/fortio:latest"
+13s         Normal   Pulled      pod/fortio-warmup-e0147c63   Successfully pulled image "fortio/fortio:latest" in 1.403s (1.403s including waiting). Image size: 19001528 bytes.
+13s         Normal   Created     pod/fortio-warmup-e0147c63   Created container: fortio-warmup-e0147c63
+12s         Normal   Started     pod/fortio-warmup-e0147c63   Started container fortio-warmup-e0147c63

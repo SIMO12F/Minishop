@@ -1,0 +1,337 @@
+﻿Fortio 1.73.2 running at 10 queries per second, 12->12 procs, for 5s: http://gateway-service:8081/actuator/health
+Aggregated Function Time : count 50 avg 0.039326178 +/- 0.03751 min 0.001584893 max 0.172289276 sum 1.96630892
+# target 50% 0.02375
+# target 75% 0.0675
+# target 90% 0.0925
+# target 99% 0.166145
+# target 99.9% 0.171675
+Error cases : count 0 avg 0 +/- 0 min 0 max 0 sum 0
+# Socket and IP used for each connection:
+[0]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.000734862 +/- 0 min 0.000734862 max 0.000734862 sum 0.000734862
+[1]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.082882517 +/- 0 min 0.082882517 max 0.082882517 sum 0.082882517
+[2]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.00290203 +/- 0 min 0.00290203 max 0.00290203 sum 0.00290203
+[3]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.002327758 +/- 0 min 0.002327758 max 0.002327758 sum 0.002327758
+[4]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.004779234 +/- 0 min 0.004779234 max 0.004779234 sum 0.004779234
+[5]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.006858184 +/- 0 min 0.006858184 max 0.006858184 sum 0.006858184
+[6]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.002040486 +/- 0 min 0.002040486 max 0.002040486 sum 0.002040486
+[7]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.089623936 +/- 0 min 0.089623936 max 0.089623936 sum 0.089623936
+[8]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.001223122 +/- 0 min 0.001223122 max 0.001223122 sum 0.001223122
+[9]   1 socket used, resolved to 10.105.103.134:8081, connection timing : count 1 avg 0.005231803 +/- 0 min 0.005231803 max 0.005231803 sum 0.005231803
+Sockets used: 10 (for perfect keepalive, would be 10)
+Uniform: false, Jitter: false, Catchup allowed: true
+IP addresses distribution:
+10.105.103.134:8081: 10
+Code 200 : 50 (100.0 %)
+All done 50 calls (plus 10 warmup) 39.326 ms avg, 9.8 qps
+Successfully wrote 5651 bytes of Json data to stdout
+{
+  "RunType": "HTTP",
+  "Labels": "gateway-service:8081/actuator/health , fortio-warmup-f53a09cd",
+  "StartTime": "2026-01-25T03:01:12.126485862Z",
+  "RequestedQPS": "10",
+  "RequestedDuration": "5s",
+  "ActualQPS": 9.842030958455608,
+  "ActualDuration": 5080252258,
+  "NumThreads": 10,
+  "Version": "1.73.2",
+  "DurationHistogram": {
+    "Count": 50,
+    "Min": 0.001584893,
+    "Max": 0.172289276,
+    "Sum": 1.9663089219999998,
+    "Avg": 0.03932617844,
+    "StdDev": 0.037505289283256076,
+    "Data": [
+      {
+        "Start": 0.001584893,
+        "End": 0.002,
+        "Percent": 2,
+        "Count": 1
+      },
+      {
+        "Start": 0.002,
+        "End": 0.003,
+        "Percent": 8,
+        "Count": 3
+      },
+      {
+        "Start": 0.003,
+        "End": 0.004,
+        "Percent": 10,
+        "Count": 1
+      },
+      {
+        "Start": 0.004,
+        "End": 0.005,
+        "Percent": 22,
+        "Count": 6
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 26,
+        "Count": 2
+      },
+      {
+        "Start": 0.016,
+        "End": 0.018000000000000002,
+        "Percent": 42,
+        "Count": 8
+      },
+      {
+        "Start": 0.018000000000000002,
+        "End": 0.02,
+        "Percent": 44,
+        "Count": 1
+      },
+      {
+        "Start": 0.02,
+        "End": 0.025,
+        "Percent": 52,
+        "Count": 4
+      },
+      {
+        "Start": 0.025,
+        "End": 0.03,
+        "Percent": 64,
+        "Count": 6
+      },
+      {
+        "Start": 0.045,
+        "End": 0.05,
+        "Percent": 66,
+        "Count": 1
+      },
+      {
+        "Start": 0.06,
+        "End": 0.07,
+        "Percent": 78,
+        "Count": 6
+      },
+      {
+        "Start": 0.07,
+        "End": 0.08,
+        "Percent": 82,
+        "Count": 2
+      },
+      {
+        "Start": 0.08,
+        "End": 0.09,
+        "Percent": 88,
+        "Count": 3
+      },
+      {
+        "Start": 0.09,
+        "End": 0.1,
+        "Percent": 96,
+        "Count": 4
+      },
+      {
+        "Start": 0.1,
+        "End": 0.12,
+        "Percent": 98,
+        "Count": 1
+      },
+      {
+        "Start": 0.16,
+        "End": 0.172289276,
+        "Percent": 100,
+        "Count": 1
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.02375
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.0675
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.0925
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.166144638
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.17167481220000003
+      }
+    ]
+  },
+  "ErrorsDurationHistogram": {
+    "Count": 0,
+    "Min": 0,
+    "Max": 0,
+    "Sum": 0,
+    "Avg": 0,
+    "StdDev": 0,
+    "Data": null
+  },
+  "Exactly": 0,
+  "Jitter": false,
+  "Uniform": false,
+  "NoCatchUp": false,
+  "RunID": 0,
+  "AccessLoggerInfo": "",
+  "ID": "2026-01-25-030111_gateway_service_8081_actuator_health_fortio_warmup_f53a09cd",
+  "RetCodes": {
+    "200": 50
+  },
+  "IPCountMap": {
+    "10.105.103.134:8081": 10
+  },
+  "Insecure": false,
+  "MTLS": false,
+  "CACert": "",
+  "Cert": "",
+  "Key": "",
+  "UnixDomainSocket": "",
+  "URL": "http://gateway-service:8081/actuator/health",
+  "NumConnections": 1,
+  "Compression": false,
+  "DisableFastClient": false,
+  "HTTP10": false,
+  "H2": false,
+  "DisableKeepAlive": false,
+  "AllowHalfClose": false,
+  "FollowRedirects": false,
+  "Resolve": "",
+  "HTTPReqTimeOut": 3000000000,
+  "UserCredentials": "",
+  "ContentType": "",
+  "Payload": "",
+  "MethodOverride": "",
+  "LogErrors": true,
+  "SequentialWarmup": false,
+  "ConnReuseRange": [
+    0,
+    0
+  ],
+  "NoResolveEachConn": false,
+  "Offset": 0,
+  "Resolution": 0.001,
+  "Sizes": {
+    "Count": 50,
+    "Min": 202,
+    "Max": 202,
+    "Sum": 10100,
+    "Avg": 202,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 202,
+        "End": 202,
+        "Percent": 100,
+        "Count": 50
+      }
+    ]
+  },
+  "HeaderSizes": {
+    "Count": 50,
+    "Min": 142,
+    "Max": 142,
+    "Sum": 7100,
+    "Avg": 142,
+    "StdDev": 0,
+    "Data": [
+      {
+        "Start": 142,
+        "End": 142,
+        "Percent": 100,
+        "Count": 50
+      }
+    ]
+  },
+  "Sockets": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "SocketCount": 10,
+  "ConnectionStats": {
+    "Count": 10,
+    "Min": 0.000734862,
+    "Max": 0.089623936,
+    "Sum": 0.19860393199999998,
+    "Avg": 0.0198603932,
+    "StdDev": 0.03327896744787364,
+    "Data": [
+      {
+        "Start": 0.000734862,
+        "End": 0.001,
+        "Percent": 10,
+        "Count": 1
+      },
+      {
+        "Start": 0.001,
+        "End": 0.002,
+        "Percent": 20,
+        "Count": 1
+      },
+      {
+        "Start": 0.002,
+        "End": 0.003,
+        "Percent": 50,
+        "Count": 3
+      },
+      {
+        "Start": 0.004,
+        "End": 0.005,
+        "Percent": 60,
+        "Count": 1
+      },
+      {
+        "Start": 0.005,
+        "End": 0.006,
+        "Percent": 70,
+        "Count": 1
+      },
+      {
+        "Start": 0.006,
+        "End": 0.007,
+        "Percent": 80,
+        "Count": 1
+      },
+      {
+        "Start": 0.08,
+        "End": 0.089623936,
+        "Percent": 100,
+        "Count": 2
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.003
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.006500000000000001
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.084811968
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.0891427392
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.08957581632
+      }
+    ]
+  },
+  "AbortOn": 0
+}

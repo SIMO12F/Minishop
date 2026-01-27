@@ -1,0 +1,85 @@
+﻿LAST SEEN   TYPE     REASON      OBJECT                MESSAGE
+15m         Normal   Scheduled   pod/nettest           Successfully assigned minishop/nettest to minikube
+15m         Normal   Pulled      pod/nettest           Container image "busybox:1.36" already present on machine
+15m         Normal   Created     pod/nettest           Created container: nettest
+15m         Normal   Started     pod/nettest           Started container nettest
+8m2s        Normal   Scheduled   pod/nettest           Successfully assigned minishop/nettest to minikube
+8m1s        Normal   Started     pod/nettest           Started container nettest
+8m1s        Normal   Created     pod/nettest           Created container: nettest
+8m1s        Normal   Pulled      pod/nettest           Container image "busybox:1.36" already present on machine
+7m56s       Normal   Scheduled   pod/nettest           Successfully assigned minishop/nettest to minikube
+7m55s       Normal   Created     pod/nettest           Created container: nettest
+7m55s       Normal   Pulled      pod/nettest           Container image "busybox:1.36" already present on machine
+7m54s       Normal   Started     pod/nettest           Started container nettest
+7m49s       Normal   Scheduled   pod/fortio-ae906b5d   Successfully assigned minishop/fortio-ae906b5d to minikube
+7m48s       Normal   Pulled      pod/fortio-ae906b5d   Container image "fortio/fortio:1.63.0" already present on machine
+7m48s       Normal   Created     pod/fortio-ae906b5d   Created container: fortio-ae906b5d
+7m47s       Normal   Started     pod/fortio-ae906b5d   Started container fortio-ae906b5d
+7m36s       Normal   Scheduled   pod/fortio-5b61d8ca   Successfully assigned minishop/fortio-5b61d8ca to minikube
+7m35s       Normal   Pulled      pod/fortio-5b61d8ca   Container image "fortio/fortio:1.63.0" already present on machine
+7m35s       Normal   Created     pod/fortio-5b61d8ca   Created container: fortio-5b61d8ca
+7m35s       Normal   Started     pod/fortio-5b61d8ca   Started container fortio-5b61d8ca
+6m50s       Normal   Scheduled   pod/fortio-de25b071   Successfully assigned minishop/fortio-de25b071 to minikube
+6m49s       Normal   Pulled      pod/fortio-de25b071   Container image "fortio/fortio:1.63.0" already present on machine
+6m48s       Normal   Created     pod/fortio-de25b071   Created container: fortio-de25b071
+6m48s       Normal   Started     pod/fortio-de25b071   Started container fortio-de25b071
+6m39s       Normal   Scheduled   pod/fortio-a06f7d81   Successfully assigned minishop/fortio-a06f7d81 to minikube
+6m38s       Normal   Pulled      pod/fortio-a06f7d81   Container image "fortio/fortio:1.63.0" already present on machine
+6m38s       Normal   Started     pod/fortio-a06f7d81   Started container fortio-a06f7d81
+6m38s       Normal   Created     pod/fortio-a06f7d81   Created container: fortio-a06f7d81
+5m57s       Normal   Scheduled   pod/fortio-71edca08   Successfully assigned minishop/fortio-71edca08 to minikube
+5m56s       Normal   Created     pod/fortio-71edca08   Created container: fortio-71edca08
+5m56s       Normal   Pulled      pod/fortio-71edca08   Container image "fortio/fortio:1.63.0" already present on machine
+5m56s       Normal   Started     pod/fortio-71edca08   Started container fortio-71edca08
+5m48s       Normal   Scheduled   pod/fortio-036dab72   Successfully assigned minishop/fortio-036dab72 to minikube
+5m47s       Normal   Pulled      pod/fortio-036dab72   Container image "fortio/fortio:1.63.0" already present on machine
+5m46s       Normal   Started     pod/fortio-036dab72   Started container fortio-036dab72
+5m46s       Normal   Created     pod/fortio-036dab72   Created container: fortio-036dab72
+5m6s        Normal   Scheduled   pod/fortio-fe80b693   Successfully assigned minishop/fortio-fe80b693 to minikube
+5m5s        Normal   Pulled      pod/fortio-fe80b693   Container image "fortio/fortio:1.63.0" already present on machine
+5m4s        Normal   Created     pod/fortio-fe80b693   Created container: fortio-fe80b693
+5m4s        Normal   Started     pod/fortio-fe80b693   Started container fortio-fe80b693
+4m56s       Normal   Scheduled   pod/fortio-fca4d6e0   Successfully assigned minishop/fortio-fca4d6e0 to minikube
+4m55s       Normal   Pulled      pod/fortio-fca4d6e0   Container image "fortio/fortio:1.63.0" already present on machine
+4m54s       Normal   Started     pod/fortio-fca4d6e0   Started container fortio-fca4d6e0
+4m54s       Normal   Created     pod/fortio-fca4d6e0   Created container: fortio-fca4d6e0
+4m12s       Normal   Scheduled   pod/fortio-2e5704fc   Successfully assigned minishop/fortio-2e5704fc to minikube
+4m11s       Normal   Pulled      pod/fortio-2e5704fc   Container image "fortio/fortio:1.63.0" already present on machine
+4m11s       Normal   Created     pod/fortio-2e5704fc   Created container: fortio-2e5704fc
+4m11s       Normal   Started     pod/fortio-2e5704fc   Started container fortio-2e5704fc
+4m1s        Normal   Scheduled   pod/fortio-19ecaf76   Successfully assigned minishop/fortio-19ecaf76 to minikube
+4m          Normal   Pulled      pod/fortio-19ecaf76   Container image "fortio/fortio:1.63.0" already present on machine
+3m59s       Normal   Created     pod/fortio-19ecaf76   Created container: fortio-19ecaf76
+3m59s       Normal   Started     pod/fortio-19ecaf76   Started container fortio-19ecaf76
+3m19s       Normal   Scheduled   pod/fortio-143ce05a   Successfully assigned minishop/fortio-143ce05a to minikube
+3m18s       Normal   Pulled      pod/fortio-143ce05a   Container image "fortio/fortio:1.63.0" already present on machine
+3m18s       Normal   Created     pod/fortio-143ce05a   Created container: fortio-143ce05a
+3m18s       Normal   Started     pod/fortio-143ce05a   Started container fortio-143ce05a
+3m9s        Normal   Scheduled   pod/fortio-fe5b712a   Successfully assigned minishop/fortio-fe5b712a to minikube
+3m8s        Normal   Started     pod/fortio-fe5b712a   Started container fortio-fe5b712a
+3m8s        Normal   Created     pod/fortio-fe5b712a   Created container: fortio-fe5b712a
+3m8s        Normal   Pulled      pod/fortio-fe5b712a   Container image "fortio/fortio:1.63.0" already present on machine
+2m28s       Normal   Scheduled   pod/fortio-978f51a2   Successfully assigned minishop/fortio-978f51a2 to minikube
+2m27s       Normal   Pulled      pod/fortio-978f51a2   Container image "fortio/fortio:1.63.0" already present on machine
+2m27s       Normal   Started     pod/fortio-978f51a2   Started container fortio-978f51a2
+2m27s       Normal   Created     pod/fortio-978f51a2   Created container: fortio-978f51a2
+2m19s       Normal   Scheduled   pod/fortio-92e54f87   Successfully assigned minishop/fortio-92e54f87 to minikube
+2m18s       Normal   Created     pod/fortio-92e54f87   Created container: fortio-92e54f87
+2m18s       Normal   Pulled      pod/fortio-92e54f87   Container image "fortio/fortio:1.63.0" already present on machine
+2m17s       Normal   Started     pod/fortio-92e54f87   Started container fortio-92e54f87
+97s         Normal   Scheduled   pod/fortio-e95fc817   Successfully assigned minishop/fortio-e95fc817 to minikube
+96s         Normal   Pulled      pod/fortio-e95fc817   Container image "fortio/fortio:1.63.0" already present on machine
+96s         Normal   Created     pod/fortio-e95fc817   Created container: fortio-e95fc817
+95s         Normal   Started     pod/fortio-e95fc817   Started container fortio-e95fc817
+87s         Normal   Scheduled   pod/fortio-f564c2d3   Successfully assigned minishop/fortio-f564c2d3 to minikube
+86s         Normal   Created     pod/fortio-f564c2d3   Created container: fortio-f564c2d3
+86s         Normal   Started     pod/fortio-f564c2d3   Started container fortio-f564c2d3
+86s         Normal   Pulled      pod/fortio-f564c2d3   Container image "fortio/fortio:1.63.0" already present on machine
+46s         Normal   Scheduled   pod/fortio-02af395d   Successfully assigned minishop/fortio-02af395d to minikube
+45s         Normal   Pulled      pod/fortio-02af395d   Container image "fortio/fortio:1.63.0" already present on machine
+44s         Normal   Started     pod/fortio-02af395d   Started container fortio-02af395d
+44s         Normal   Created     pod/fortio-02af395d   Created container: fortio-02af395d
+36s         Normal   Scheduled   pod/fortio-1fdb3e76   Successfully assigned minishop/fortio-1fdb3e76 to minikube
+35s         Normal   Created     pod/fortio-1fdb3e76   Created container: fortio-1fdb3e76
+35s         Normal   Pulled      pod/fortio-1fdb3e76   Container image "fortio/fortio:1.63.0" already present on machine
+34s         Normal   Started     pod/fortio-1fdb3e76   Started container fortio-1fdb3e76
