@@ -15,3 +15,21 @@ Thumbs.db
 # Logs
 *.log
 
+# Generated experiment archives
+*.zip
+
+# Raw experiment artifacts
+results/exp_patterns_minikube_v1/**/rep*/
+results/exp_patterns_minikube_v1/daynight_invalid/
+results/exp_patterns_minikube_v1/metrics/
+results/exp_patterns_minikube_v1/spike/reactive_old/
+
+# Generated replica dumps
+results/replicas_*.txt
+
+# Keep important final outputs
+!results/exp_patterns_minikube_v1/summary_fortio.csv
+!results/exp_patterns_minikube_v1/summary_fortio_agg.csv
+!results/plots_agg/
+!results/plots_agg/*.png
+
