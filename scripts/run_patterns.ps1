@@ -21,18 +21,18 @@ $Namespace = "minishop"
 $OutRoot = Join-Path $RepoRoot "results\exp_patterns_minikube_v1"
 $BaseManifest = Join-Path $RepoRoot "k8s\minishop.yaml"
 $AutoscalingDir = Join-Path $RepoRoot "k8s\autoscaling"
-
-$TargetUrl = "http://gateway-service:8081/actuator/health"
+$HealthUrl = "http://gateway-service:8081/actuator/health"
+$TargetUrl = "http://gateway-service:8081/api/summary"
 
 $Concurrency = 10
-$WarmupSeconds = 5
+$WarmupSeconds = 10
 
 # ============================
 # RUN CONFIG (YOU REQUESTED)
 # ============================
-$Reps = 3
-$PatternsToRun = @("spike")
-$StrategiesToRun = @("hybrid")
+$Reps = 5
+$PatternsToRun = @("daynight")
+$StrategiesToRun = @("baseline", "reactive", "proactive", "hybrid")
 
 # pick ONE kubectl.exe (avoid the "two paths" bug)
 $kubectlCandidates = @(Get-Command kubectl -All -CommandType Application -ErrorAction Stop)
@@ -59,9 +59,14 @@ function Invoke-Kubectl {
 
 function Check-Minikube {
     Log "Checking minikube status..."
-    $out = & minikube status 2>$null
-    if ($LASTEXITCODE -ne 0) { throw "minikube is not running. Start it: minikube start" }
-    $out | ForEach-Object { Write-Host $_ }
+    $out = & minikube status 2>&1
+    $exitCode = $LASTEXITCODE
+
+    if ($out) { $out | ForEach-Object { Write-Host $_ } }
+
+    if ($exitCode -ne 0) {
+        throw "minikube is not running or the profile is broken. Run: minikube start"
+    }
 }
 
 function Ensure-MetricsServer {
@@ -77,19 +82,30 @@ function Apply-BaseManifest {
 function Wait-Rollout([string]$ns) {
     foreach ($dep in @("gateway-service","order-service","product-service")) {
         Log "Waiting rollout: deployment/$dep"
-        Invoke-Kubectl "-n" $ns "rollout" "status" ("deployment/$dep") "--timeout=180s" | Out-Null
+        & $KubectlCmd -n $ns rollout status deployment/$dep --timeout=180s
+        if ($LASTEXITCODE -ne 0) {
+            throw "Rollout failed for deployment/$dep"
+        }
     }
 }
 
 function Wait-PodsReady([string]$ns, [string]$selector) {
     Log "Waiting pods Ready for selector: $selector"
-    Invoke-Kubectl "-n" $ns "wait" "pod" "-l" $selector "--for=condition=Ready" "--timeout=180s" | Out-Null
+    & $KubectlCmd -n $ns wait pod -l $selector --for=condition=Ready --timeout=180s
+    if ($LASTEXITCODE -ne 0) {
+        throw "Pods did not become Ready for selector: $selector"
+    }
 }
 
+
 function Check-GatewayHealth([string]$ns) {
-    Log "Checking gateway health (in-cluster): $TargetUrl"
-    Invoke-Kubectl "-n" $ns "run" "nettest" "--rm" "--stdin=true" "--restart=Never" "--image=busybox:1.36" "--" `
-        "wget" "-q" "-O-" $TargetUrl | Out-Null
+    Log "Checking gateway health (in-cluster): $HealthUrl"
+    & $KubectlCmd -n $ns run nettest --rm --stdin=true --restart=Never --image=busybox:1.36 -- `
+        wget -q -O- $HealthUrl | Out-Null
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Gateway health check failed: $HealthUrl"
+    }
 }
 
 function Cleanup-Autoscaling([string]$ns) {
@@ -142,7 +158,28 @@ function Save-Snapshot([string]$ns, [string]$outDir, [string]$label) {
     try { Invoke-Kubectl "-n" $ns "top" "pods"                | Out-File -Encoding utf8 "$prefix.top_pods.txt" } catch {}
     try { Invoke-Kubectl "top" "nodes"                         | Out-File -Encoding utf8 "$prefix.top_nodes.txt" } catch {}
 }
+function Save-RunMetadata([string]$outDir, [string]$strategy, [string]$pattern, [int]$rep) {
+    $metaFile = Join-Path $outDir "run_metadata.txt"
 
+    "SCRIPT_VERSION=$SCRIPT_VERSION" | Out-File -Encoding utf8 $metaFile
+    "TIMESTAMP=$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" | Out-File -Append -Encoding utf8 $metaFile
+    "STRATEGY=$strategy" | Out-File -Append -Encoding utf8 $metaFile
+    "PATTERN=$pattern" | Out-File -Append -Encoding utf8 $metaFile
+    "REPETITION=$rep" | Out-File -Append -Encoding utf8 $metaFile
+    "TARGET_URL=$TargetUrl" | Out-File -Append -Encoding utf8 $metaFile
+    "HEALTH_URL=$HealthUrl" | Out-File -Append -Encoding utf8 $metaFile
+    "CONCURRENCY=$Concurrency" | Out-File -Append -Encoding utf8 $metaFile
+    "WARMUP_SECONDS=$WarmupSeconds" | Out-File -Append -Encoding utf8 $metaFile
+
+    try { "MINIKUBE_VERSION=$(& minikube version)" | Out-File -Append -Encoding utf8 $metaFile } catch {}
+    try { "KUBECTL_VERSION=$(& $KubectlCmd version --client -o yaml)" | Out-File -Append -Encoding utf8 $metaFile } catch {}
+    try { "K8S_CONTEXT=$(& $KubectlCmd config current-context)" | Out-File -Append -Encoding utf8 $metaFile } catch {}
+    try { "DOCKER_VERSION=$(docker version --format '{{.Client.Version}} / {{.Server.Version}}')" | Out-File -Append -Encoding utf8 $metaFile } catch {}
+
+    try { Invoke-Kubectl "-n" $Namespace "get" "deploy" "-o" "yaml" | Out-File -Encoding utf8 (Join-Path $outDir "deployments.yaml") } catch {}
+    try { Invoke-Kubectl "-n" $Namespace "get" "hpa" "-o" "yaml" | Out-File -Encoding utf8 (Join-Path $outDir "hpa.yaml") } catch {}
+    try { Invoke-Kubectl "-n" $Namespace "get" "cronjob" "-o" "yaml" | Out-File -Encoding utf8 (Join-Path $outDir "cronjobs.yaml") } catch {}
+}
 function Sanitize-K8sName([string]$s) {
     $x = $s.ToLower()
     $x = $x -replace "_", "-"
@@ -190,48 +227,68 @@ function Run-FortioSegment {
         [string]$url
     )
 
+    function Invoke-FortioOnce([string]$podName, [string]$jsonSuffix) {
+        Log "Starting fortio pod: $podName | $segmentName | qps=$qps | t=${durationSec}s | c=$concurrency"
+
+        $args = @(
+            "-n", $ns, "run", $podName,
+            "--restart=Never",
+            "--image=fortio/fortio:latest",
+            "--",
+            "load",
+            "-qps", "$qps",
+            "-t", "${durationSec}s",
+            "-c", "$concurrency",
+            "-json", "-",
+            "-quiet",
+            "-logger-json=false",
+            "$url"
+        )
+
+        $out = Invoke-Kubectl @args
+        if ($out) { Log "kubectl run> $out" }
+
+        Wait-PodExists $ns $podName 60
+        Save-Snapshot $ns $outDir ("segment_{0}_start{1}" -f $segmentName, $jsonSuffix)
+
+        $phase = Wait-PodFinished $ns $podName 900
+        Log "Fortio finished: $podName (phase=$phase)"
+
+        $jsonFile = Join-Path $outDir ("fortio_{0}{1}.json" -f $segmentName, $jsonSuffix)
+        Invoke-Kubectl "-n" $ns "logs" $podName "--all-containers=true" | Out-File -Encoding utf8 $jsonFile
+
+        $descFile = Join-Path $outDir ("fortio_{0}{1}.describe.txt" -f $segmentName, $jsonSuffix)
+        try { Invoke-Kubectl "-n" $ns "describe" "pod" $podName | Out-File -Encoding utf8 $descFile } catch {}
+
+        Save-Snapshot $ns $outDir ("segment_{0}_end{1}" -f $segmentName, $jsonSuffix)
+
+        try { Invoke-Kubectl "-n" $ns "delete" "pod" $podName "--ignore-not-found" | Out-Null } catch {}
+
+        return $phase
+    }
+
     $podName = New-FortioPodName $segmentName
+    $phase = Invoke-FortioOnce -podName $podName -jsonSuffix ""
 
-    Log "Starting fortio pod: $podName | $segmentName | qps=$qps | t=${durationSec}s | c=$concurrency"
+    if ($phase -eq "Succeeded") {
+        return
+    }
 
-    # IMPORTANT: -json - writes JSON to stdout. No file write in container => no crash.
-    # -quiet + -logger-json=false => keep logs clean (JSON-only)
-    $args = @(
-        "-n", $ns, "run", $podName,
-        "--restart=Never",
-        "--image=fortio/fortio:latest",
-        "--",
-        "load",
-        "-qps", "$qps",
-        "-t", "${durationSec}s",
-        "-c", "$concurrency",
-        "-json", "-",
-        "-quiet",
-        "-logger-json=false",
-        "$url"
-    )
+    if ($segmentName -eq "warmup") {
+        Log "Warmup failed once; waiting 5 seconds and retrying..."
+        Start-Sleep -Seconds 5
 
-    $out = Invoke-Kubectl @args
-    if ($out) { Log "kubectl run> $out" }
+        $retryPodName = New-FortioPodName ($segmentName + "-retry")
+        $retryPhase = Invoke-FortioOnce -podName $retryPodName -jsonSuffix "_retry"
 
-    Wait-PodExists $ns $podName 60
-    Save-Snapshot $ns $outDir ("segment_{0}_start" -f $segmentName)
+        if ($retryPhase -ne "Succeeded") {
+            throw "Warmup failed twice (initial + retry)."
+        }
 
-    $phase = Wait-PodFinished $ns $podName 900
-    Log "Fortio finished: $podName (phase=$phase)"
+        return
+    }
 
-    # JSON result (stdout)
-    $jsonFile = Join-Path $outDir ("fortio_{0}.json" -f $segmentName)
-    Invoke-Kubectl "-n" $ns "logs" $podName "--all-containers=true" | Out-File -Encoding utf8 $jsonFile
-
-    # Describe for debugging always
-    $descFile = Join-Path $outDir ("fortio_{0}.describe.txt" -f $segmentName)
-    try { Invoke-Kubectl "-n" $ns "describe" "pod" $podName | Out-File -Encoding utf8 $descFile } catch {}
-
-    Save-Snapshot $ns $outDir ("segment_{0}_end" -f $segmentName)
-
-    # Cleanup
-    try { Invoke-Kubectl "-n" $ns "delete" "pod" $podName "--ignore-not-found" | Out-Null } catch {}
+    throw "Fortio segment failed: $segmentName (phase=$phase)"
 }
 
 function Get-PatternSegments([string]$pattern) {
@@ -281,6 +338,9 @@ foreach ($strategy in $StrategiesToRun) {
     Apply-Strategy $Namespace $strategy
     Wait-Rollout $Namespace
     Wait-PodsReady $Namespace "app=gateway-service"
+    Save-Snapshot $Namespace $OutRoot ("strategy_{0}_applied" -f $strategy)
+    Log "Settling after strategy application..."
+    Start-Sleep -Seconds 10
 
     foreach ($pattern in $PatternsToRun) {
         $segments = Get-PatternSegments $pattern
@@ -294,6 +354,7 @@ foreach ($strategy in $StrategiesToRun) {
 
             $repDir = Join-Path $OutRoot (Join-Path $pattern (Join-Path $strategy ("rep{0}" -f $rep)))
             Ensure-Dir $repDir
+            Save-RunMetadata -outDir $repDir -strategy $strategy -pattern $pattern -rep $rep
 
             Log "Warmup: qps=10 t=${WarmupSeconds}s"
             Run-FortioSegment -ns $Namespace -outDir $repDir -segmentName "warmup" -qps 10 -durationSec $WarmupSeconds -concurrency $Concurrency -url $TargetUrl
