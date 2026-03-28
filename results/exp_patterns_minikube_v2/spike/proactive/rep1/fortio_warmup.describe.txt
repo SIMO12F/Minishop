@@ -1,0 +1,72 @@
+﻿Name:             fortio-warmup-2cf578a1
+Namespace:        minishop
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Thu, 26 Mar 2026 21:50:15 +0100
+Labels:           run=fortio-warmup-2cf578a1
+Annotations:      <none>
+Status:           Succeeded
+IP:               10.244.0.249
+IPs:
+  IP:  10.244.0.249
+Containers:
+  fortio-warmup-2cf578a1:
+    Container ID:  docker://9f128ab698d6c6d0c4357b1c1913cf48ae793ffc611595a51743e1f656cabfac
+    Image:         fortio/fortio:latest
+    Image ID:      docker-pullable://fortio/fortio@sha256:c26276816981710a38449d447d085737b7531d4aa0f8dd8aeffd4e709643370a
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      load
+      -qps
+      10
+      -t
+      10s
+      -c
+      10
+      -json
+      -
+      -quiet
+      -logger-json=false
+      http://gateway-service:8081/api/summary
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Thu, 26 Mar 2026 21:50:49 +0100
+      Finished:     Thu, 26 Mar 2026 21:51:00 +0100
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-blzlp (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-blzlp:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  49s                default-scheduler  Successfully assigned minishop/fortio-warmup-2cf578a1 to minikube
+  Warning  Failed     32s                kubelet            Failed to pull image "fortio/fortio:latest": Error response from daemon: Head "https://registry-1.docker.io/v2/fortio/fortio/manifests/latest": unable to decode token response: net/http: request canceled (Client.Timeout or context cancellation while reading body)
+  Warning  Failed     32s                kubelet            Error: ErrImagePull
+  Normal   BackOff    31s                kubelet            Back-off pulling image "fortio/fortio:latest"
+  Warning  Failed     31s                kubelet            Error: ImagePullBackOff
+  Normal   Pulling    17s (x2 over 47s)  kubelet            Pulling image "fortio/fortio:latest"
+  Normal   Pulled     16s                kubelet            Successfully pulled image "fortio/fortio:latest" in 1.312s (1.312s including waiting). Image size: 19325112 bytes.
+  Normal   Created    15s                kubelet            Created container: fortio-warmup-2cf578a1
+  Normal   Started    15s                kubelet            Started container fortio-warmup-2cf578a1

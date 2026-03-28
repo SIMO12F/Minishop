@@ -1,0 +1,68 @@
+﻿Name:             fortio-spike-d37faeb4
+Namespace:        minishop
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Thu, 26 Mar 2026 22:23:05 +0100
+Labels:           run=fortio-spike-d37faeb4
+Annotations:      <none>
+Status:           Succeeded
+IP:               10.244.1.28
+IPs:
+  IP:  10.244.1.28
+Containers:
+  fortio-spike-d37faeb4:
+    Container ID:  docker://a943df161cdcd29b8870d9a0d78e64a7f5bea49480c674e268c2261e7802e24a
+    Image:         fortio/fortio:latest
+    Image ID:      docker-pullable://fortio/fortio@sha256:c26276816981710a38449d447d085737b7531d4aa0f8dd8aeffd4e709643370a
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      load
+      -qps
+      60
+      -t
+      30s
+      -c
+      10
+      -json
+      -
+      -quiet
+      -logger-json=false
+      http://gateway-service:8081/api/summary
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Thu, 26 Mar 2026 22:23:08 +0100
+      Finished:     Thu, 26 Mar 2026 22:23:38 +0100
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-57k46 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-57k46:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  37s   default-scheduler  Successfully assigned minishop/fortio-spike-d37faeb4 to minikube
+  Normal  Pulling    36s   kubelet            Pulling image "fortio/fortio:latest"
+  Normal  Pulled     35s   kubelet            Successfully pulled image "fortio/fortio:latest" in 1.404s (1.404s including waiting). Image size: 19325112 bytes.
+  Normal  Created    34s   kubelet            Created container: fortio-spike-d37faeb4
+  Normal  Started    34s   kubelet            Started container fortio-spike-d37faeb4

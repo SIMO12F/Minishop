@@ -1,0 +1,4 @@
+﻿NAME          REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+gateway-hpa   Deployment/gateway-service   cpu: 18%/60%   1         6         5          21m
+order-hpa     Deployment/order-service     cpu: 14%/60%   1         4         1          21m
+product-hpa   Deployment/product-service   cpu: 11%/60%   1         4         1          21m

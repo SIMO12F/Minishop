@@ -18,7 +18,7 @@ $SCRIPT_VERSION = "2026-01-25-PATTERNS-v7.5 (fortio json via stdout + no cp/exec
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $Namespace = "minishop"
 
-$OutRoot = Join-Path $RepoRoot "results\exp_patterns_minikube_v1"
+$OutRoot = Join-Path $RepoRoot "results\exp_patterns_minikube_v2"
 $BaseManifest = Join-Path $RepoRoot "k8s\minishop.yaml"
 $AutoscalingDir = Join-Path $RepoRoot "k8s\autoscaling"
 $HealthUrl = "http://gateway-service:8081/actuator/health"
@@ -30,8 +30,8 @@ $WarmupSeconds = 10
 # ============================
 # RUN CONFIG (YOU REQUESTED)
 # ============================
-$Reps = 5
-$PatternsToRun = @("daynight")
+$Reps = 3
+$PatternsToRun = @("spike", "daynight")
 $StrategiesToRun = @("baseline", "reactive", "proactive", "hybrid")
 
 # pick ONE kubectl.exe (avoid the "two paths" bug)

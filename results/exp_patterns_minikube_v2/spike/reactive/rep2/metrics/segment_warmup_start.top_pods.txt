@@ -1,0 +1,9 @@
+﻿NAME                              CPU(cores)   MEMORY(bytes)   
+gateway-service-967d96996-652wb   307m         79Mi            
+gateway-service-967d96996-k74qq   320m         82Mi            
+gateway-service-967d96996-n57zq   323m         81Mi            
+gateway-service-967d96996-qn2vb   300m         75Mi            
+gateway-service-967d96996-wg25k   39m          221Mi           
+gateway-service-967d96996-xscps   127m         169Mi           
+order-service-6957cffc98-r2np5    16m          184Mi           
+product-service-bfd76d8d7-qjc46   15m          178Mi           

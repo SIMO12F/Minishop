@@ -1,0 +1,72 @@
+﻿Name:             fortio-spike-27d48315
+Namespace:        minishop
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Thu, 26 Mar 2026 21:33:16 +0100
+Labels:           run=fortio-spike-27d48315
+Annotations:      <none>
+Status:           Succeeded
+IP:               10.244.0.235
+IPs:
+  IP:  10.244.0.235
+Containers:
+  fortio-spike-27d48315:
+    Container ID:  docker://4ff44c0323d7386391716669b0e099e372142445470813abfc8639f8c5a958ac
+    Image:         fortio/fortio:latest
+    Image ID:      docker-pullable://fortio/fortio@sha256:c26276816981710a38449d447d085737b7531d4aa0f8dd8aeffd4e709643370a
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      load
+      -qps
+      60
+      -t
+      30s
+      -c
+      10
+      -json
+      -
+      -quiet
+      -logger-json=false
+      http://gateway-service:8081/api/summary
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Thu, 26 Mar 2026 21:33:51 +0100
+      Finished:     Thu, 26 Mar 2026 21:34:22 +0100
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vrlzf (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-vrlzf:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  70s                default-scheduler  Successfully assigned minishop/fortio-spike-27d48315 to minikube
+  Warning  Failed     55s                kubelet            Failed to pull image "fortio/fortio:latest": Error response from daemon: Head "https://registry-1.docker.io/v2/fortio/fortio/manifests/latest": Get "https://auth.docker.io/token?scope=repository%3Afortio%2Ffortio%3Apull&service=registry.docker.io": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+  Warning  Failed     55s                kubelet            Error: ErrImagePull
+  Normal   BackOff    55s                kubelet            Back-off pulling image "fortio/fortio:latest"
+  Warning  Failed     55s                kubelet            Error: ImagePullBackOff
+  Normal   Pulling    41s (x2 over 70s)  kubelet            Pulling image "fortio/fortio:latest"
+  Normal   Pulled     36s                kubelet            Successfully pulled image "fortio/fortio:latest" in 5.169s (5.169s including waiting). Image size: 19325112 bytes.
+  Normal   Created    36s                kubelet            Created container: fortio-spike-27d48315
+  Normal   Started    35s                kubelet            Started container fortio-spike-27d48315

@@ -1,0 +1,68 @@
+﻿Name:             fortio-day-abc153fd
+Namespace:        minishop
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Thu, 26 Mar 2026 22:35:32 +0100
+Labels:           run=fortio-day-abc153fd
+Annotations:      <none>
+Status:           Succeeded
+IP:               10.244.1.40
+IPs:
+  IP:  10.244.1.40
+Containers:
+  fortio-day-abc153fd:
+    Container ID:  docker://6691deb1c1baf770d65946b2ecf008636753a95c456b30020d3451c6ee86abd4
+    Image:         fortio/fortio:latest
+    Image ID:      docker-pullable://fortio/fortio@sha256:c26276816981710a38449d447d085737b7531d4aa0f8dd8aeffd4e709643370a
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      load
+      -qps
+      30
+      -t
+      90s
+      -c
+      10
+      -json
+      -
+      -quiet
+      -logger-json=false
+      http://gateway-service:8081/api/summary
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Thu, 26 Mar 2026 22:35:35 +0100
+      Finished:     Thu, 26 Mar 2026 22:37:05 +0100
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-mkxxq (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-mkxxq:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  96s   default-scheduler  Successfully assigned minishop/fortio-day-abc153fd to minikube
+  Normal  Pulling    95s   kubelet            Pulling image "fortio/fortio:latest"
+  Normal  Pulled     94s   kubelet            Successfully pulled image "fortio/fortio:latest" in 1.239s (1.239s including waiting). Image size: 19325112 bytes.
+  Normal  Created    94s   kubelet            Created container: fortio-day-abc153fd
+  Normal  Started    94s   kubelet            Started container fortio-day-abc153fd
