@@ -1,0 +1,415 @@
+﻿Fortio 1.63.0 running at 30 queries per second, 12->12 procs, for 1m30s: http://gateway-service:8081/api/summary?work=2
+Aggregated Function Time : count 2700 avg 0.061029088 +/- 0.1048 min 0.006763239 max 2.218810719 sum 164.778538
+# target 50% 0.0214706
+# target 75% 0.086625
+# target 90% 0.113743
+# target 99% 0.305882
+# target 99.9% 2.07111
+Error cases : count 0 avg 0 +/- 0 min 0 max 0 sum 0
+# Socket and IP used for each connection:
+[0]   3 socket used, resolved to 10.108.179.229:8081, connection timing : count 3 avg 0.000790064 +/- 0.000115 min 0.000648744 max 0.000930453 sum 0.002370192
+[1]   3 socket used, resolved to 10.108.179.229:8081, connection timing : count 3 avg 0.00041563033 +/- 0.0002224 min 0.000252771 max 0.00073005 sum 0.001246891
+[2]   3 socket used, resolved to 10.108.179.229:8081, connection timing : count 3 avg 0.00034422867 +/- 7.365e-05 min 0.000270502 max 0.000444806 sum 0.001032686
+[3]   3 socket used, resolved to 10.108.179.229:8081, connection timing : count 3 avg 0.0021118903 +/- 0.002565 min 0.000296979 max 0.005739252 sum 0.006335671
+[4]   3 socket used, resolved to 10.108.179.229:8081, connection timing : count 3 avg 0.00047200633 +/- 4.338e-05 min 0.000412981 max 0.000515992 sum 0.001416019
+[5]   3 socket used, resolved to 10.108.179.229:8081, connection timing : count 3 avg 0.0023424487 +/- 0.002188 min 0.000612164 max 0.005429811 sum 0.007027346
+[6]   3 socket used, resolved to 10.108.179.229:8081, connection timing : count 3 avg 0.0013129157 +/- 0.0007876 min 0.000368824 max 0.002296863 sum 0.003938747
+[7]   3 socket used, resolved to 10.108.179.229:8081, connection timing : count 3 avg 0.0020991593 +/- 0.002584 min 0.000249897 max 0.005752988 sum 0.006297478
+[8]   3 socket used, resolved to 10.108.179.229:8081, connection timing : count 3 avg 0.000600709 +/- 0.0003791 min 0.00031593 max 0.001136433 sum 0.001802127
+[9]   3 socket used, resolved to 10.108.179.229:8081, connection timing : count 3 avg 0.0024996053 +/- 0.001976 min 0.000184697 max 0.005013638 sum 0.007498816
+Sockets used: 30 (for perfect keepalive, would be 10)
+Uniform: false, Jitter: false, Catchup allowed: true
+IP addresses distribution:
+10.108.179.229:8081: 30
+Code 200 : 2700 (100.0 %)
+All done 2700 calls (plus 10 warmup) 61.029 ms avg, 30.0 qps
+{
+  "RunType": "HTTP",
+  "Labels": "gateway-service:8081/api/summary?work=2 , fortio-day-dbfa4c76",
+  "StartTime": "2026-03-30T23:46:10.433619065Z",
+  "RequestedQPS": "30",
+  "RequestedDuration": "1m30s",
+Successfully wrote 7710 bytes of Json data to stdout
+  "ActualQPS": 29.96474023612974,
+  "ActualDuration": 90105903763,
+  "NumThreads": 10,
+  "Version": "1.63.0",
+  "DurationHistogram": {
+    "Count": 2700,
+    "Min": 0.006763239,
+    "Max": 2.218810719,
+    "Sum": 164.77853792000002,
+    "Avg": 0.061029088118518524,
+    "StdDev": 0.10480312797410726,
+    "Data": [
+      {
+        "Start": 0.006763239,
+        "End": 0.007,
+        "Percent": 0.07407407407407407,
+        "Count": 2
+      },
+      {
+        "Start": 0.007,
+        "End": 0.008,
+        "Percent": 1.0740740740740742,
+        "Count": 27
+      },
+      {
+        "Start": 0.008,
+        "End": 0.009000000000000001,
+        "Percent": 3.6666666666666665,
+        "Count": 70
+      },
+      {
+        "Start": 0.009000000000000001,
+        "End": 0.01,
+        "Percent": 6.962962962962963,
+        "Count": 89
+      },
+      {
+        "Start": 0.01,
+        "End": 0.011,
+        "Percent": 11.518518518518519,
+        "Count": 123
+      },
+      {
+        "Start": 0.011,
+        "End": 0.012,
+        "Percent": 20,
+        "Count": 229
+      },
+      {
+        "Start": 0.012,
+        "End": 0.014,
+        "Percent": 37.18518518518518,
+        "Count": 464
+      },
+      {
+        "Start": 0.014,
+        "End": 0.016,
+        "Percent": 46.77777777777778,
+        "Count": 259
+      },
+      {
+        "Start": 0.016,
+        "End": 0.018000000000000002,
+        "Percent": 48.629629629629626,
+        "Count": 50
+      },
+      {
+        "Start": 0.018000000000000002,
+        "End": 0.02,
+        "Percent": 49.81481481481482,
+        "Count": 32
+      },
+      {
+        "Start": 0.02,
+        "End": 0.025,
+        "Percent": 50.44444444444444,
+        "Count": 17
+      },
+      {
+        "Start": 0.025,
+        "End": 0.03,
+        "Percent": 51.074074074074076,
+        "Count": 17
+      },
+      {
+        "Start": 0.03,
+        "End": 0.035,
+        "Percent": 51.407407407407405,
+        "Count": 9
+      },
+      {
+        "Start": 0.035,
+        "End": 0.04,
+        "Percent": 51.666666666666664,
+        "Count": 7
+      },
+      {
+        "Start": 0.04,
+        "End": 0.045,
+        "Percent": 52.148148148148145,
+        "Count": 13
+      },
+      {
+        "Start": 0.045,
+        "End": 0.05,
+        "Percent": 52.51851851851852,
+        "Count": 10
+      },
+      {
+        "Start": 0.05,
+        "End": 0.06,
+        "Percent": 56.407407407407405,
+        "Count": 105
+      },
+      {
+        "Start": 0.06,
+        "End": 0.07,
+        "Percent": 63.592592592592595,
+        "Count": 194
+      },
+      {
+        "Start": 0.07,
+        "End": 0.08,
+        "Percent": 71.07407407407408,
+        "Count": 202
+      },
+      {
+        "Start": 0.08,
+        "End": 0.09,
+        "Percent": 77,
+        "Count": 160
+      },
+      {
+        "Start": 0.09,
+        "End": 0.1,
+        "Percent": 85.44444444444444,
+        "Count": 228
+      },
+      {
+        "Start": 0.1,
+        "End": 0.12,
+        "Percent": 92.07407407407408,
+        "Count": 179
+      },
+      {
+        "Start": 0.12,
+        "End": 0.14,
+        "Percent": 92.4074074074074,
+        "Count": 9
+      },
+      {
+        "Start": 0.14,
+        "End": 0.16,
+        "Percent": 92.81481481481481,
+        "Count": 11
+      },
+      {
+        "Start": 0.16,
+        "End": 0.18,
+        "Percent": 93.70370370370371,
+        "Count": 24
+      },
+      {
+        "Start": 0.18,
+        "End": 0.2,
+        "Percent": 94.44444444444444,
+        "Count": 20
+      },
+      {
+        "Start": 0.2,
+        "End": 0.25,
+        "Percent": 96.92592592592592,
+        "Count": 67
+      },
+      {
+        "Start": 0.25,
+        "End": 0.3,
+        "Percent": 98.92592592592592,
+        "Count": 54
+      },
+      {
+        "Start": 0.3,
+        "End": 0.35000000000000003,
+        "Percent": 99.55555555555556,
+        "Count": 17
+      },
+      {
+        "Start": 0.35000000000000003,
+        "End": 0.4,
+        "Percent": 99.85185185185185,
+        "Count": 8
+      },
+      {
+        "Start": 2,
+        "End": 2.218810719,
+        "Percent": 100,
+        "Count": 4
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.021470588235294113
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.086625
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.11374301675977654
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.3058823529411766
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 2.0711134836750125
+      }
+    ]
+  },
+  "ErrorsDurationHistogram": {
+    "Count": 0,
+    "Min": 0,
+    "Max": 0,
+    "Sum": 0,
+    "Avg": 0,
+    "StdDev": 0,
+    "Data": null
+  },
+  "Exactly": 0,
+  "Jitter": false,
+  "Uniform": false,
+  "NoCatchUp": false,
+  "RunID": 0,
+  "AccessLoggerInfo": "",
+  "ID": "2026-03-30-234610_gateway_service_8081_api_summary_work_2_fortio_day_dbfa4c76",
+  "RetCodes": {
+    "200": 2700
+  },
+  "IPCountMap": {
+    "10.108.179.229:8081": 30
+  },
+  "Insecure": false,
+  "MTLS": false,
+  "CACert": "",
+  "Cert": "",
+  "Key": "",
+  "UnixDomainSocket": "",
+  "URL": "http://gateway-service:8081/api/summary?work=2",
+  "NumConnections": 1,
+  "Compression": false,
+  "DisableFastClient": false,
+  "HTTP10": false,
+  "H2": false,
+  "DisableKeepAlive": false,
+  "AllowHalfClose": false,
+  "FollowRedirects": false,
+  "Resolve": "",
+  "HTTPReqTimeOut": 3000000000,
+  "UserCredentials": "",
+  "ContentType": "",
+  "Payload": "",
+  "MethodOverride": "",
+  "LogErrors": true,
+  "SequentialWarmup": false,
+  "ConnReuseRange": [
+    0,
+    0
+  ],
+  "NoResolveEachConn": false,
+  "Offset": 0,
+  "Resolution": 0.001,
+  "Sizes": {
+    "Count": 2700,
+    "Min": 611,
+    "Max": 630,
+    "Sum": 1650080,
+    "Avg": 611.1407407407407,
+    "StdDev": 1.629191860398219,
+    "Data": [
+      {
+        "Start": 611,
+        "End": 630,
+        "Percent": 100,
+        "Count": 2700
+      }
+    ]
+  },
+  "HeaderSizes": {
+    "Count": 2700,
+    "Min": 114,
+    "Max": 133,
+    "Sum": 308180,
+    "Avg": 114.14074074074074,
+    "StdDev": 1.6291918603922906,
+    "Data": [
+      {
+        "Start": 114,
+        "End": 125,
+        "Percent": 99.25925925925925,
+        "Count": 2680
+      },
+      {
+        "Start": 125,
+        "End": 133,
+        "Percent": 100,
+        "Count": 20
+      }
+    ]
+  },
+  "Sockets": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+  ],
+  "SocketCount": 30,
+  "ConnectionStats": {
+    "Count": 30,
+    "Min": 0.000184697,
+    "Max": 0.005752988,
+    "Sum": 0.038965972999999994,
+    "Avg": 0.0012988657666666665,
+    "StdDev": 0.001724465335545749,
+    "Data": [
+      {
+        "Start": 0.000184697,
+        "End": 0.001,
+        "Percent": 73.33333333333333,
+        "Count": 22
+      },
+      {
+        "Start": 0.001,
+        "End": 0.002,
+        "Percent": 80,
+        "Count": 2
+      },
+      {
+        "Start": 0.002,
+        "End": 0.003,
+        "Percent": 86.66666666666667,
+        "Count": 2
+      },
+      {
+        "Start": 0.005,
+        "End": 0.005752988,
+        "Percent": 100,
+        "Count": 4
+      }
+    ],
+    "Percentiles": [
+      {
+        "Percentile": 50,
+        "Value": 0.0007282323333333333
+      },
+      {
+        "Percentile": 75,
+        "Value": 0.0012500000000000007
+      },
+      {
+        "Percentile": 90,
+        "Value": 0.005188247
+      },
+      {
+        "Percentile": 99,
+        "Value": 0.0056965139
+      },
+      {
+        "Percentile": 99.9,
+        "Value": 0.00574734059
+      }
+    ]
+  },
+  "AbortOn": 0
+}

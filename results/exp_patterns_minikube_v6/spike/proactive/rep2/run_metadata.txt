@@ -1,0 +1,16 @@
+﻿SCRIPT_VERSION=2026-03-30-PATTERNS-v8.0 (reset+direct-scale+cpu-work)
+TIMESTAMP=2026-03-31 02:09:56
+STRATEGY=proactive
+PATTERN=spike
+REPETITION=2
+TARGET_URL=http://gateway-service:8081/api/summary?work=2
+HEALTH_URL=http://gateway-service:8081/actuator/health
+CONCURRENCY=10
+WARMUP_SECONDS=10
+WORK_MS=2
+CPU_REQUEST=100m
+CPU_LIMIT=500m
+MINIKUBE_VERSION=minikube version: v1.37.0 commit: 65318f4cfff9c12cc87ec9eb8f4cdd57b25047f3
+KUBECTL_VERSION=clientVersion:   buildDate: "2025-11-11T19:10:16Z"   compiler: gc   gitCommit: 8cc511e399b929453cd98ae65b419c3cc227ec79   gitTreeState: clean   gitVersion: v1.34.2   goVersion: go1.24.9   major: "1"   minor: "34"   platform: windows/amd64 kustomizeVersion: v5.7.1 
+K8S_CONTEXT=minikube
+DOCKER_VERSION=28.5.1

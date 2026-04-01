@@ -1,0 +1,67 @@
+﻿Name:             fortio-low-1-5468f37e
+Namespace:        minishop
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Tue, 31 Mar 2026 04:39:18 +0200
+Labels:           run=fortio-low-1-5468f37e
+Annotations:      <none>
+Status:           Failed
+IP:               10.244.2.222
+IPs:
+  IP:  10.244.2.222
+Containers:
+  fortio-low-1-5468f37e:
+    Container ID:  docker://ccefc37606cba53e214148dab454b8fe852aeba725978fe1e19915327376ec0a
+    Image:         fortio/fortio:1.63.0
+    Image ID:      docker-pullable://fortio/fortio@sha256:eb97b15821bc453ba5a0b10fa694b34794158509cd246e80adb9e967342a258e
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      load
+      -qps
+      10
+      -t
+      60s
+      -c
+      10
+      -json
+      -
+      -quiet
+      -logger-json=false
+      http://gateway-service:8081/api/summary?work=2
+    State:          Terminated
+      Reason:       Error
+      Exit Code:    1
+      Started:      Tue, 31 Mar 2026 04:39:20 +0200
+      Finished:     Tue, 31 Mar 2026 04:39:23 +0200
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-sn2nl (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-sn2nl:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  8s    default-scheduler  Successfully assigned minishop/fortio-low-1-5468f37e to minikube
+  Normal  Pulled     7s    kubelet            Container image "fortio/fortio:1.63.0" already present on machine
+  Normal  Created    7s    kubelet            Created container: fortio-low-1-5468f37e
+  Normal  Started    7s    kubelet            Started container fortio-low-1-5468f37e

@@ -1,0 +1,152 @@
+﻿apiVersion: v1
+items:
+- apiVersion: autoscaling/v2
+  kind: HorizontalPodAutoscaler
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"autoscaling/v2","kind":"HorizontalPodAutoscaler","metadata":{"annotations":{},"name":"gateway-hpa","namespace":"minishop"},"spec":{"behavior":{"scaleDown":{"policies":[{"periodSeconds":60,"type":"Percent","value":50},{"periodSeconds":60,"type":"Pods","value":2}],"selectPolicy":"Max","stabilizationWindowSeconds":300},"scaleUp":{"policies":[{"periodSeconds":15,"type":"Percent","value":100},{"periodSeconds":15,"type":"Pods","value":4}],"selectPolicy":"Max","stabilizationWindowSeconds":0}},"maxReplicas":6,"metrics":[{"resource":{"name":"cpu","target":{"averageUtilization":60,"type":"Utilization"}},"type":"Resource"}],"minReplicas":1,"scaleTargetRef":{"apiVersion":"apps/v1","kind":"Deployment","name":"gateway-service"}}}
+    creationTimestamp: "2026-03-30T22:28:04Z"
+    name: gateway-hpa
+    namespace: minishop
+    resourceVersion: "78997"
+    uid: 11a0731d-cb96-41b0-a4ac-56cb0737dcef
+  spec:
+    behavior:
+      scaleDown:
+        policies:
+        - periodSeconds: 60
+          type: Percent
+          value: 50
+        - periodSeconds: 60
+          type: Pods
+          value: 2
+        selectPolicy: Max
+        stabilizationWindowSeconds: 300
+      scaleUp:
+        policies:
+        - periodSeconds: 15
+          type: Percent
+          value: 100
+        - periodSeconds: 15
+          type: Pods
+          value: 4
+        selectPolicy: Max
+        stabilizationWindowSeconds: 0
+    maxReplicas: 6
+    metrics:
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 60
+          type: Utilization
+      type: Resource
+    minReplicas: 1
+    scaleTargetRef:
+      apiVersion: apps/v1
+      kind: Deployment
+      name: gateway-service
+  status:
+    currentMetrics: null
+    desiredReplicas: 0
+- apiVersion: autoscaling/v2
+  kind: HorizontalPodAutoscaler
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"autoscaling/v2","kind":"HorizontalPodAutoscaler","metadata":{"annotations":{},"name":"order-hpa","namespace":"minishop"},"spec":{"behavior":{"scaleDown":{"policies":[{"periodSeconds":60,"type":"Percent","value":50},{"periodSeconds":60,"type":"Pods","value":1}],"selectPolicy":"Max","stabilizationWindowSeconds":300},"scaleUp":{"policies":[{"periodSeconds":15,"type":"Percent","value":100},{"periodSeconds":15,"type":"Pods","value":2}],"selectPolicy":"Max","stabilizationWindowSeconds":0}},"maxReplicas":4,"metrics":[{"resource":{"name":"cpu","target":{"averageUtilization":60,"type":"Utilization"}},"type":"Resource"}],"minReplicas":1,"scaleTargetRef":{"apiVersion":"apps/v1","kind":"Deployment","name":"order-service"}}}
+    creationTimestamp: "2026-03-30T22:28:04Z"
+    name: order-hpa
+    namespace: minishop
+    resourceVersion: "78998"
+    uid: 8767a075-6ae1-42c6-9271-f14f217df3c0
+  spec:
+    behavior:
+      scaleDown:
+        policies:
+        - periodSeconds: 60
+          type: Percent
+          value: 50
+        - periodSeconds: 60
+          type: Pods
+          value: 1
+        selectPolicy: Max
+        stabilizationWindowSeconds: 300
+      scaleUp:
+        policies:
+        - periodSeconds: 15
+          type: Percent
+          value: 100
+        - periodSeconds: 15
+          type: Pods
+          value: 2
+        selectPolicy: Max
+        stabilizationWindowSeconds: 0
+    maxReplicas: 4
+    metrics:
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 60
+          type: Utilization
+      type: Resource
+    minReplicas: 1
+    scaleTargetRef:
+      apiVersion: apps/v1
+      kind: Deployment
+      name: order-service
+  status:
+    currentMetrics: null
+    desiredReplicas: 0
+- apiVersion: autoscaling/v2
+  kind: HorizontalPodAutoscaler
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"autoscaling/v2","kind":"HorizontalPodAutoscaler","metadata":{"annotations":{},"name":"product-hpa","namespace":"minishop"},"spec":{"behavior":{"scaleDown":{"policies":[{"periodSeconds":60,"type":"Percent","value":50},{"periodSeconds":60,"type":"Pods","value":1}],"selectPolicy":"Max","stabilizationWindowSeconds":300},"scaleUp":{"policies":[{"periodSeconds":15,"type":"Percent","value":100},{"periodSeconds":15,"type":"Pods","value":2}],"selectPolicy":"Max","stabilizationWindowSeconds":0}},"maxReplicas":4,"metrics":[{"resource":{"name":"cpu","target":{"averageUtilization":60,"type":"Utilization"}},"type":"Resource"}],"minReplicas":1,"scaleTargetRef":{"apiVersion":"apps/v1","kind":"Deployment","name":"product-service"}}}
+    creationTimestamp: "2026-03-30T22:28:04Z"
+    name: product-hpa
+    namespace: minishop
+    resourceVersion: "78999"
+    uid: 147593f4-906d-4804-8243-7ee7c8cc0384
+  spec:
+    behavior:
+      scaleDown:
+        policies:
+        - periodSeconds: 60
+          type: Percent
+          value: 50
+        - periodSeconds: 60
+          type: Pods
+          value: 1
+        selectPolicy: Max
+        stabilizationWindowSeconds: 300
+      scaleUp:
+        policies:
+        - periodSeconds: 15
+          type: Percent
+          value: 100
+        - periodSeconds: 15
+          type: Pods
+          value: 2
+        selectPolicy: Max
+        stabilizationWindowSeconds: 0
+    maxReplicas: 4
+    metrics:
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 60
+          type: Utilization
+      type: Resource
+    minReplicas: 1
+    scaleTargetRef:
+      apiVersion: apps/v1
+      kind: Deployment
+      name: product-service
+  status:
+    currentMetrics: null
+    desiredReplicas: 0
+kind: List
+metadata:
+  resourceVersion: ""

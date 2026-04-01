@@ -1,0 +1,6 @@
+﻿NAME                              READY   STATUS              RESTARTS      AGE    IP            NODE       NOMINATED NODE   READINESS GATES
+fortio-warmup-b6584730            0/1     Error               0             22d    <none>        minikube   <none>           <none>
+fortio-warmup-e0168457            0/1     ContainerCreating   0             0s     <none>        minikube   <none>           <none>
+gateway-service-967d96996-652wb   1/1     Running             3 (81m ago)   4d1h   10.244.1.93   minikube   <none>           <none>
+order-service-6957cffc98-r2np5    1/1     Running             4 (81m ago)   22d    10.244.1.95   minikube   <none>           <none>
+product-service-bfd76d8d7-qjc46   1/1     Running             4 (81m ago)   22d    10.244.1.94   minikube   <none>           <none>

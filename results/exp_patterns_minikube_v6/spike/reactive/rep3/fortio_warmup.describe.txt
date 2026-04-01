@@ -1,0 +1,67 @@
+﻿Name:             fortio-warmup-03a2cd96
+Namespace:        minishop
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Tue, 31 Mar 2026 01:29:48 +0200
+Labels:           run=fortio-warmup-03a2cd96
+Annotations:      <none>
+Status:           Succeeded
+IP:               10.244.1.226
+IPs:
+  IP:  10.244.1.226
+Containers:
+  fortio-warmup-03a2cd96:
+    Container ID:  docker://08d032a2b0c2104a2cbc026a0d1cbb82f02fb53389b1d4141108ed2c62ecbe31
+    Image:         fortio/fortio:1.63.0
+    Image ID:      docker-pullable://fortio/fortio@sha256:eb97b15821bc453ba5a0b10fa694b34794158509cd246e80adb9e967342a258e
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      load
+      -qps
+      10
+      -t
+      10s
+      -c
+      10
+      -json
+      -
+      -quiet
+      -logger-json=false
+      http://gateway-service:8081/api/summary?work=2
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Tue, 31 Mar 2026 01:29:50 +0200
+      Finished:     Tue, 31 Mar 2026 01:30:00 +0200
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-229mx (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-229mx:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  16s   default-scheduler  Successfully assigned minishop/fortio-warmup-03a2cd96 to minikube
+  Normal  Pulled     15s   kubelet            Container image "fortio/fortio:1.63.0" already present on machine
+  Normal  Created    15s   kubelet            Created container: fortio-warmup-03a2cd96
+  Normal  Started    14s   kubelet            Started container fortio-warmup-03a2cd96

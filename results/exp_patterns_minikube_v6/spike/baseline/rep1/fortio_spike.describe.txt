@@ -1,0 +1,67 @@
+﻿Name:             fortio-spike-1f3a2b69
+Namespace:        minishop
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Tue, 31 Mar 2026 01:00:01 +0200
+Labels:           run=fortio-spike-1f3a2b69
+Annotations:      <none>
+Status:           Succeeded
+IP:               10.244.1.190
+IPs:
+  IP:  10.244.1.190
+Containers:
+  fortio-spike-1f3a2b69:
+    Container ID:  docker://cd8b9a33177d24904f354e8f4bde19f17b575f52d91c0a003ac24e1f421231db
+    Image:         fortio/fortio:1.63.0
+    Image ID:      docker-pullable://fortio/fortio@sha256:eb97b15821bc453ba5a0b10fa694b34794158509cd246e80adb9e967342a258e
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      load
+      -qps
+      60
+      -t
+      30s
+      -c
+      10
+      -json
+      -
+      -quiet
+      -logger-json=false
+      http://gateway-service:8081/api/summary?work=2
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Tue, 31 Mar 2026 01:00:02 +0200
+      Finished:     Tue, 31 Mar 2026 01:00:33 +0200
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5ll2h (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-5ll2h:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  36s   default-scheduler  Successfully assigned minishop/fortio-spike-1f3a2b69 to minikube
+  Normal  Pulled     35s   kubelet            Container image "fortio/fortio:1.63.0" already present on machine
+  Normal  Created    35s   kubelet            Created container: fortio-spike-1f3a2b69
+  Normal  Started    34s   kubelet            Started container fortio-spike-1f3a2b69

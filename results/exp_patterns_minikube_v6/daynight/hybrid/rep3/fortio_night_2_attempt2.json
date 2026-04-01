@@ -1,0 +1,2 @@
+﻿Fortio 1.63.0 running at 10 queries per second, 12->12 procs, for 1m0s: http://gateway-service:8081/api/summary?work=2
+Aborting because of error -1 for http://gateway-service:8081/api/summary?work=2 (0 bytes)
