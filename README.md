@@ -1,611 +1,291 @@
-# MiniShop
+# MiniShop — Evaluating Autoscaling Strategies for Java Microservices on Kubernetes
 
-MiniShop is a compact Java microservice testbed for controlled autoscaling experiments on Kubernetes. This project was developed as part of my Master’s thesis on evaluating autoscaling strategies for Java microservices on Kubernetes, with a comparative focus on **reactive**, **proactive**, and **hybrid** scaling under identical workload and deployment conditions.
+> Reactive vs. Proactive vs. Hybrid — a controlled empirical comparison on single-node Kubernetes.
 
-The repository is intentionally small enough to remain reproducible on a local **Minikube** cluster while still exposing the behaviors that matter for autoscaling research: service-to-service calls, readiness and startup delays, JVM warm-up effects, scaling lag, and end-to-end tail latency at a gateway boundary.
+[![Java](https://img.shields.io/badge/Java-21_LTS-orange)]()
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0-green)]()
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-1.34-blue)]()
+[![Minikube](https://img.shields.io/badge/Minikube-1.37-blueviolet)]()
 
-## Table of Contents
+This repository contains the **MiniShop** testbed and experimental harness for my Master's thesis at HAWK Göttingen (2026): *Evaluating Autoscaling Strategies for Java Microservices on Kubernetes: Reactive vs. Proactive vs. Hybrid*.
 
-- [Project Overview](#project-overview)
-- [Research Context](#research-context)
-- [System Architecture](#system-architecture)
-- [Services and Endpoints](#services-and-endpoints)
-- [Autoscaling Strategies](#autoscaling-strategies)
-- [Technology Stack](#technology-stack)
-- [Repository Structure](#repository-structure)
-- [Running the System Locally](#running-the-system-locally)
-- [Running with Docker Compose](#running-with-docker-compose)
-- [Running on Kubernetes (Minikube)](#running-on-kubernetes-minikube)
-- [Experiment Workflow](#experiment-workflow)
-- [Results and Evaluation Scope](#results-and-evaluation-scope)
-- [Reproducibility Notes](#reproducibility-notes)
-- [Limitations](#limitations)
-- [Author / Thesis Note](#author--thesis-note)
+MiniShop is a three-service Spring Boot application deployed on Kubernetes with a configurable CPU workload and a controlled experiment runner that compares four autoscaling conditions across two workload patterns, producing reproducible p99 tail-latency and throughput measurements at the gateway.
 
 ---
 
-## Project Overview
+## TL;DR — Headline Finding
 
-MiniShop consists of three Spring Boot microservices:
+On a **single-node** Kubernetes cluster, **horizontal scaling beyond 3–4 pods degrades rather than improves performance**. The strategy ranking observed here is the reverse of what the multi-node literature reports:
 
-- `gateway-service`
-- `product-service`
-- `order-service`
+> **Baseline ≈ Reactive  >  Proactive  >  Hybrid**
 
-The gateway acts as the single entry point and aggregates responses from the two backend services. This creates a short but meaningful service chain for measuring **end-to-end latency** rather than isolated single-service behavior.
+| Strategy | Pods during spike | P99 spike (ms) | Achieved QPS | Throughput loss |
+|---|---|---|---|---|
+| **Baseline** (fixed 3 pods) | 3 | **291** | **59.8 / 60** | 0.3% |
+| **Reactive** (HPA) | 3–6 | 244 | 59.1 / 60 | 1.5% |
+| Proactive (pre-scaled) | 10 | 810 | 27.5 / 60 | **54.2%** |
+| Hybrid (floor + HPA) | 7–14 | 734 | 32.5 / 60 | **45.8%** |
 
-The repository supports three main use cases:
+The cause is **CPU contention**: on a single node, each additional JVM instance adds fixed runtime overhead that outweighs the load-distribution benefit. This finding is *infrastructure-dependent* — the same strategies would be expected to win on multi-node clusters where pods distribute across physical machines.
 
-- **Academic documentation** for the thesis testbed and experiment logic
-- **Recruiter / portfolio presentation** of a practical microservices + Kubernetes project
-- **Developer reproducibility**, including local execution, Docker Compose, and Minikube-based experiment workflows
-
----
-
-## Research Context
-
-This project was developed as part of my Master’s thesis on evaluating autoscaling strategies for Java microservices on Kubernetes.
-
-The core idea of the study is to compare different autoscaling strategy classes under the same controlled conditions:
-
-- identical application version
-- identical Kubernetes manifests
-- identical resource requests and limits
-- identical workload patterns
-- identical measurement point
-- only the autoscaling strategy changes
-
-The primary performance outcome is **end-to-end tail latency** measured at the gateway endpoint `/api/summary`, with special attention to **p95** and **p99** behavior. Throughput is treated mainly as a validity check, and resource-based cost is interpreted as a transparent comparative proxy rather than provider billing.
+See [`results_report.md`](./results_report.md) for the full analysis and the thesis PDF for the complete discussion and literature context.
 
 ---
 
-## System Architecture
+## Architecture
 
-### High-level request flow
+MiniShop is a gateway-based microservice chain. A single request to `GET /api/summary?work=2` triggers **two sequential downstream calls**, so the end-to-end response time at the gateway equals the sum of both downstream response times — making the gateway the correct measurement point for tail latency.
 
-```text
-Client / Load Generator
-        |
-        v
-gateway-service :8081
-   |            |
-   v            v
-product-service :8080
-order-service   :8082
+```
+           ┌─────────────────────────────────────────────────────┐
+           │  Kubernetes namespace: minishop                     │
+           │                                                     │
+  Fortio   │   ┌──────────┐        ┌────────────────┐            │
+   ─────────► gateway   │ ──GET──►│ product-service│ :8080      │
+  10/30/60 │   │ :8081    │        └────────────────┘            │
+    QPS    │   │          │        ┌────────────────┐            │
+           │   │          │ ──GET──►│ order-service  │ :8082     │
+           │   └────┬─────┘        └────────────────┘            │
+           │        │                                            │
+           │        ▼                                            │
+           │    p99 measured here                                │
+           │                                                     │
+           │   ┌──────────────┐                                  │
+           │   │ HPA / script │   autoscaling controller         │
+           │   │              │   CPU target: 60%                │
+           │   └──────────────┘                                  │
+           └─────────────────────────────────────────────────────┘
 ```
 
-### Architectural idea
-
-- `gateway-service` is the client-facing entry point
-- `product-service` provides product data
-- `order-service` provides order data
-- `/api/summary` in the gateway calls both backend services and returns one combined response
-
-This makes MiniShop suitable for studying autoscaling effects in a **microservice request chain**, where latency depends not only on one service but also on downstream dependencies.
-
----
-
-## Services and Endpoints
-
-### `product-service`
-Runs on port `8080`
-
-Endpoints:
-
-- `GET /products`
-- `GET /products/{id}`
-- `POST /products`
-
-Health-related endpoints:
-
-- `GET /actuator/health`
-- `GET /actuator/health/readiness`
-- `GET /actuator/health/liveness`
-
-### `order-service`
-Runs on port `8082`
-
-Endpoints:
-
-- `GET /orders`
-- `GET /orders/{id}`
-
-Health-related endpoints:
-
-- `GET /actuator/health`
-- `GET /actuator/health/readiness`
-- `GET /actuator/health/liveness`
-
-### `gateway-service`
-Runs on port `8081`
-
-Endpoints:
-
-- `GET /api/products`
-- `GET /api/orders`
-- `GET /api/summary`
-
-Health-related endpoints:
-
-- `GET /actuator/health`
-- `GET /actuator/health/readiness`
-- `GET /actuator/health/liveness`
-
-### Notes on workload parameters
-
-The service endpoints support query parameters that help generate controlled behavior during tests:
-
-- `work`
-- `tailEvery`
-- `tailExtra`
-
-These parameters are used to simulate CPU work and occasional tail-latency effects in a controlled way.
-
----
-
-## Autoscaling Strategies
-
-MiniShop compares four deployment conditions:
-
-### 1. Baseline
-No autoscaling. All services run with fixed replica counts.
-
-### 2. Reactive
-Kubernetes **Horizontal Pod Autoscaler (HPA)** based on CPU utilization.
-
-Current HPA setup in the repository:
-
-- CPU target: `60%`
-- `gateway-service`: `1..6` replicas
-- `order-service`: `1..4` replicas
-- `product-service`: `1..4` replicas
-
-### 3. Proactive
-Schedule-driven scaling using **Kubernetes CronJobs**.
-
-Current schedule in the repository:
-
-- scale up at minute `0` of every hour
-- scale down at minute `30` of every hour
-
-Current proactive target sizes:
-
-- `gateway-service` → `4` replicas
-- `order-service` → `3` replicas
-- `product-service` → `3` replicas
-
-### 4. Hybrid
-Combination of **Cron-based planning** and **HPA-based correction**.
-
-In this implementation, CronJobs do **not** directly fight the Deployment replica count. Instead, they patch the HPA `minReplicas`, which creates a cleaner hybrid control design.
-
-Current hybrid floor values:
-
-- high-capacity phase:
-    - `gateway-service` minReplicas = `3`
-    - `order-service` minReplicas = `2`
-    - `product-service` minReplicas = `2`
-- low-capacity phase:
-    - all minReplicas reset to `1`
-
----
-
-## Technology Stack
-
-- **Java 21**
-- **Spring Boot 4**
-- **Spring Boot Actuator**
-- **Maven / Maven Wrapper**
-- **Docker**
-- **Docker Compose**
-- **Kubernetes**
-- **Minikube**
-- **Fortio** for load generation
-- **PowerShell** for experiment automation
-- **Python / pandas / matplotlib** for aggregation and plotting
+**Key design choices:**
+- **Sequential call chain** — end-to-end latency is the *sum* of downstream latencies, so tail events compound.
+- **Configurable CPU work** (`?work=2`) — each service burns ~2 ms of real CPU per request via a tight XOR loop, which is what lets the HPA actually trigger on CPU utilization.
+- **Minimal business logic** — no DB, no external I/O, so latency differences reflect *autoscaling behavior*, not application variability.
 
 ---
 
 ## Repository Structure
 
-```text
-minishop/
-├── gateway-service/                 # Gateway / aggregator service
-├── product-service/                 # Product backend service
-├── order-service/                   # Order backend service
+```
+.
+├── gateway-service/          Spring Boot gateway (port 8081) — sequential downstream calls
+├── product-service/          Spring Boot product service (port 8080)
+├── order-service/            Spring Boot order service (port 8082)
 ├── k8s/
-│   ├── minishop.yaml                # Base Kubernetes manifests
+│   ├── minishop.yaml         Namespace, Deployments, Services, probes, resource limits
 │   └── autoscaling/
-│       ├── reactive-hpa.yaml        # Reactive HPA configuration
-│       ├── proactive-cron.yaml      # Proactive scheduled scaling
-│       ├── hybrid-cron.yaml         # Hybrid Cron + HPA floor patching
-│       └── autoscaler-rbac-hpa.yaml # RBAC for autoscaling jobs / HPA support
+│       ├── reactive-hpa.yaml         HPA for all 3 services (60% CPU target)
+│       ├── proactive-cron.yaml       CronJob-based pre-scaling (legacy — see scripts)
+│       ├── hybrid-cron.yaml          Hybrid floor via CronJob (legacy)
+│       └── autoscaler-rbac-hpa.yaml  RBAC for dynamic HPA patching
 ├── scripts/
-│   ├── run_patterns.ps1             # Main experiment runner
-│   ├── extract_fortio_results.ps1   # Extract Fortio JSON into CSV
-│   ├── aggregate_fortio_patterns.py # Aggregate repeated runs
-│   ├── aggregate_results.py         # Older aggregation script
-│   ├── clean_summary_csvs.py        # CSV cleaning utility
-│   └── plot_results.py              # Plotting utility
+│   ├── run_patterns_v2.ps1         Main experiment runner (PowerShell)
+│   ├── extract_fortio_v6.ps1       Fortio JSON → CSV
+│   └── aggregate_fortio_v6.py      CSV → aggregated results
 ├── plots/
-│   └── make_plots.py                # Main plot generation script
-├── results/                         # Result artifacts and exported summaries
-├── docker-compose.yml               # Local multi-container setup
-└── README.md
+│   ├── make_thesis_plots.py        Generate all 7 thesis figures (Chapter 4)
+│   ├── make_plots_v6.py            Per-segment bar/error-bar plots
+│   └── make_plots.py               (legacy, v1 data)
+├── results/
+│   ├── exp_patterns_minikube_v6/   Canonical thesis results (24 runs)
+│   │   ├── spike/{baseline,reactive,proactive,hybrid}/rep{1,2,3}/
+│   │   ├── daynight/{baseline,reactive,proactive,hybrid}/rep{1,2,3}/
+│   │   ├── summary_fortio.csv        Per-segment raw results
+│   │   └── summary_fortio_agg.csv    Aggregated mean ± std
+│   └── thesis_plots/               Figures for the thesis (generated)
+├── docker-compose.yml              Local dev: all 3 services without Kubernetes
+├── results_report.md               Full results analysis
+└── README.md                       This file
 ```
+
+**Note:** Earlier experiment iterations (`exp_patterns_minikube_v1`–`v5`, `exp_matrix_minikube_v1`, various `hybrid_*` folders) are kept for traceability but are not referenced by the thesis. The canonical dataset is `exp_patterns_minikube_v6`.
 
 ---
 
-## Running the System Locally
+## Experimental Design
 
-### Requirements
+### Four autoscaling conditions
 
-- Java `21+`
-- Maven or Maven Wrapper
-- 3 terminals
-- Optional: IntelliJ IDEA
+| Condition | Mechanism | Pods at rest | Pods under peak load |
+|---|---|---|---|
+| **Baseline** | No autoscaling, fixed replicas | 3 (1+1+1) | 3 |
+| **Reactive** | Kubernetes HPA, CPU target 60% | 3 | 3–6 (HPA-driven) |
+| **Proactive** | Script-triggered `kubectl scale` | 3 | 10 (4+3+3, pre-scaled) |
+| **Hybrid** | HPA + dynamic `minReplicas` floor | 3 | 7–14 (floor 3+2+2 + HPA on top) |
 
-### 1) Start `product-service`
+### Two workload patterns
 
-```bash
-cd product-service
-./mvnw spring-boot:run
-```
+| Pattern | Segment 1 | Segment 2 (load) | Segment 3 | Purpose |
+|---|---|---|---|---|
+| **Spike** | 10 QPS × 60 s | **60 QPS × 30 s** (6× jump) | 10 QPS × 60 s | Tests the HPA reaction gap under abrupt load |
+| **Day-night** | 10 QPS × 60 s | **30 QPS × 90 s** (3× jump) | 10 QPS × 60 s | Tests scale-down penalty under gradual load |
 
-Test:
+### Configuration
 
-```text
-http://localhost:8080/products
-```
-
-### 2) Start `order-service`
-
-```bash
-cd order-service
-./mvnw spring-boot:run
-```
-
-Test:
-
-```text
-http://localhost:8082/orders
-```
-
-### 3) Start `gateway-service`
-
-```bash
-cd gateway-service
-./mvnw spring-boot:run
-```
-
-Test:
-
-```text
-http://localhost:8081/api/products
-http://localhost:8081/api/orders
-http://localhost:8081/api/summary
-```
-
-### Important note
-
-When running locally, the gateway uses local service URLs from `application.properties`:
-
-- `services.product.url=http://localhost:8080`
-- `services.order.url=http://localhost:8082`
+- **Resource limits:** CPU request `100m`, limit `500m` per pod; memory `128Mi`/`512Mi`
+- **HPA:** target 60% CPU utilization, scale-up stabilization `0s`, scale-down stabilization `300s` (Kubernetes default)
+- **Load generator:** Fortio 1.63.0, concurrency 10, inside the cluster
+- **Repetitions:** 3 per (strategy × pattern × segment) — 24 runs total
+- **Warmup:** 10 s at 10 QPS before each measurement (follows Georges et al. recommendation)
 
 ---
 
-## Running with Docker Compose
+## Results
 
-### Requirements
+All plots below are generated by `plots/make_thesis_plots.py` from `summary_fortio_agg.csv` and `summary_fortio.csv`.
 
-- Docker Desktop
-- Docker Compose v2
+### P99 tail latency — both patterns
 
-### Build the JARs
+![Combined P99](./results/thesis_plots/fig4_7_combined_p99_both.png)
 
-```bash
-cd product-service && ./mvnw clean package -DskipTests
-cd ../order-service && ./mvnw clean package -DskipTests
-cd ../gateway-service && ./mvnw clean package -DskipTests
+**Observation:** Under the abrupt spike, baseline and reactive handle the load in sub-300 ms p99. Proactive and hybrid — despite having 10+ pre-scaled pods ready — produce 2.8×–3× worse p99 because of CPU contention on the single node. Reactive then pays its scale-down penalty during recovery: p99 rises to **898 ms** (4.7× baseline) because the 300-second HPA stabilization window keeps excess pods on the shared node.
+
+Under the gradual day-night pattern, hybrid produces the worst single measurement of the entire experiment (**p99 = 1,518 ms** during the day segment, 10× baseline) because its dynamic minReplicas floor plus HPA reactive additions on top compound into maximum contention.
+
+### Per-repetition variance during recovery
+
+![Scatter recovery](./results/thesis_plots/fig4_2_scatter_p99_spike_low2.png)
+
+The scale-down penalty has high run-to-run variance: reactive repetitions range from ~530 ms to ~1380 ms depending on exactly when the HPA stabilization window expires relative to the measurement interval.
+
+### Throughput saturation under spike
+
+![QPS Spike](./results/thesis_plots/fig4_5_timeline_qps_spike.png)
+
+**Observation:** At 60 QPS target, proactive achieves only 27.5 QPS and hybrid only 32.5 QPS — **not because requests fail** (HTTP errors are ≤0.1% across all 24 runs) but because response times rise high enough that Fortio cannot complete 60 requests/second within the segment duration.
+
+### The efficiency inversion
+
+| Strategy | Resource cost (replica-seconds) | vs. baseline | P99 during load |
+|---|---|---|---|
+| Baseline | 450 | 1.0× | **best** |
+| Reactive | ~540–660 | ~1.3× | near-best |
+| Hybrid | ~630–1,050 | ~1.8× | worst |
+| Proactive | 1,080 | **2.4×** | second-worst |
+
+The strategies that consume the most resources produce the worst performance — an inversion specific to single-node infrastructure.
+
+---
+
+## Reproducing the Experiment
+
+### Prerequisites
+
+- **Windows 10/11** with PowerShell 5.1+
+- **Docker Desktop** (for the Minikube driver)
+- **Minikube** v1.37+, **kubectl** v1.34+
+- **Java 21 (LTS)**, **Maven 3.9+** (for building service images)
+- **Python 3.10+** with `pandas`, `matplotlib`, `numpy` (for aggregation and plots)
+- Roughly 4 GB free RAM and 2+ CPU cores for Minikube
+
+### 1. Start Minikube and enable metrics-server
+
+```powershell
+minikube start --cpus=4 --memory=4096 --kubernetes-version=v1.34.0
+minikube addons enable metrics-server
+```
+
+### 2. Build service images directly into Minikube's Docker daemon
+
+```powershell
+# Point Docker at Minikube's daemon (so images are available to the cluster)
+& minikube -p minikube docker-env --shell powershell | Invoke-Expression
+
+# Build each service
+cd gateway-service; .\mvnw clean package -DskipTests
+docker build -t minishop/gateway-service:0.1 .
+cd ..\product-service; .\mvnw clean package -DskipTests
+docker build -t minishop/product-service:0.1 .
+cd ..\order-service; .\mvnw clean package -DskipTests
+docker build -t minishop/order-service:0.1 .
 cd ..
+
+# Also build the kubectl sidecar image (used by hybrid CronJobs, optional)
+docker build -t minishop/kubectl:1.34 -f k8s/autoscaling/kubectl.Dockerfile k8s/autoscaling/
 ```
 
-### Start the system
+### 3. Run the full experiment matrix
 
-```bash
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass -Force
+.\scripts\run_patterns_v2.ps1
+```
+
+This runs 4 strategies × 2 patterns × 3 repetitions = **24 experiment runs** (~5 hours total). Raw Fortio JSON, per-segment pod/HPA snapshots, and run metadata are written to `results/exp_patterns_minikube_v6/`.
+
+### 4. Aggregate and plot
+
+```powershell
+.\scripts\extract_fortio_v6.ps1            # Fortio JSON → summary_fortio.csv
+python scripts\aggregate_fortio_v6.py      # → summary_fortio_agg.csv (mean ± std)
+python plots\make_thesis_plots.py          # → results/thesis_plots/*.png
+```
+
+### Alternative: Local development without Kubernetes
+
+```powershell
 docker compose up --build
-```
-
-### Test endpoints
-
-```text
-http://localhost:8080/products
-http://localhost:8082/orders
-http://localhost:8081/api/products
-http://localhost:8081/api/orders
-http://localhost:8081/api/summary
-```
-
-### Stop the system
-
-```bash
-docker compose down
-```
-
-### Docker networking note
-
-Inside Docker, the gateway resolves backend services via container DNS names:
-
-- `http://product-service:8080`
-- `http://order-service:8082`
-
----
-
-## Running on Kubernetes (Minikube)
-
-### Requirements
-
-- Minikube
-- `kubectl`
-- PowerShell
-- Python
-- metrics-server available in Minikube
-
-### Base manifest
-
-```text
-k8s/minishop.yaml
-```
-
-This manifest defines:
-
-- namespace `minishop`
-- gateway ConfigMap
-- Deployments for all three services
-- Services for all three services
-- resource requests and limits
-- startup, readiness, and liveness probes
-
-### Autoscaling manifests
-
-```text
-k8s/autoscaling/reactive-hpa.yaml
-k8s/autoscaling/proactive-cron.yaml
-k8s/autoscaling/hybrid-cron.yaml
-k8s/autoscaling/autoscaler-rbac-hpa.yaml
-```
-
-### Important note about Kubernetes images
-
-The Kubernetes manifests reference these local images:
-
-- `minishop/product-service:0.1`
-- `minishop/order-service:0.1`
-- `minishop/gateway-service:0.1`
-- `minishop/kubectl:1.34`
-
-So before applying the manifests manually, make sure those images exist in the container runtime used by your Minikube setup.
-
-### NodePort
-
-The gateway is exposed as a NodePort service on:
-
-```text
-30081
-```
-
-Internally, the experiment workflow targets the in-cluster service URL:
-
-```text
-http://gateway-service:8081/api/summary
+# Gateway available at http://localhost:8081/api/summary?work=2
 ```
 
 ---
 
-## Experiment Workflow
+## The Target Endpoint
 
-The repository contains a scripted workflow for running autoscaling experiments on Minikube, extracting Fortio outputs, aggregating repeated runs, and generating plots.
+The measurement endpoint is `GET /api/summary?work=2`. The `work` parameter controls CPU burn per call via a tight XOR loop (`WorkSimulator.burnCpuMs`). At `work=2`:
 
-### 1) Run the pattern experiments
+- Gateway burns ~2 ms CPU for `/api/summary`, plus ~2 ms each when calling `products()` and `orders()` internally → **~6 ms total at the gateway**
+- Each downstream service burns ~2 ms
+- End-to-end: ~10 ms of real CPU per request across the chain
 
-Run from the repository root:
-
-```powershell
-Set-ExecutionPolicy -Scope Process Bypass -Force
-.\scripts\run_patterns.ps1
-```
-
-### Current active script configuration
-
-At the time of writing, the main runner is configured as:
-
-```powershell
-$Reps = 5
-$PatternsToRun = @("daynight")
-$StrategiesToRun = @("baseline", "reactive", "proactive", "hybrid")
-```
-
-The script automatically:
-
-- checks Minikube
-- enables `metrics-server`
-- applies the base manifest
-- applies the autoscaling condition
-- runs Fortio from inside the cluster
-- stores metadata and snapshots for each segment
-
-### Workload patterns supported by the runner
-
-#### Spike pattern
-- `low_1` → `QPS=10`, `60s`
-- `spike` → `QPS=60`, `30s`
-- `low_2` → `QPS=10`, `60s`
-
-#### Day-night pattern
-- `night_1` → `QPS=10`, `60s`
-- `day` → `QPS=30`, `90s`
-- `night_2` → `QPS=10`, `60s`
-
-Warm-up is performed before measurement.
-
-### Output location
-
-Results are written under:
-
-```text
-results/exp_patterns_minikube_v1/<pattern>/<strategy>/repX/
-```
-
-Each repetition directory contains artifacts such as:
-
-- `run_metadata.txt`
-- `fortio_<segment>.json`
-- `fortio_<segment>.describe.txt`
-- `metrics/` snapshots
-- live deployment / HPA / CronJob state captures
-
-### 2) Extract Fortio summaries
-
-```powershell
-Set-ExecutionPolicy -Scope Process Bypass -Force
-.\scripts\extract_fortio_results.ps1
-```
-
-This produces:
-
-```text
-results/exp_patterns_minikube_v1/summary_fortio.csv
-```
-
-### 3) Aggregate repeated runs
-
-```bash
-python .\scripts\aggregate_fortio_patterns.py
-```
-
-This produces:
-
-```text
-results/exp_patterns_minikube_v1/summary_fortio_agg.csv
-```
-
-The aggregation excludes warm-up rows and computes mean / standard deviation per:
-
-- pattern
-- strategy
-- segment
-
-### 4) Generate plots
-
-```bash
-python .\plots\make_plots.py
-```
-
-This writes plot files to:
-
-```text
-results/plots_agg/
-```
-
-Typical outputs include:
-
-- `p99_daynight_day.png`
-- `p99_spike_spike.png`
-- `avg_daynight_night_2.png`
-- `qps_spike_low_1.png`
+At 10 QPS this keeps the gateway around ~60 m CPU (right at the HPA threshold with `request=100m`); at 30 and 60 QPS it comfortably saturates one pod, which is what makes the HPA actually scale.
 
 ---
 
-## Results and Evaluation Scope
+## Key Design Decisions and Why
 
-MiniShop was built to support a controlled comparative evaluation of autoscaling strategies rather than a production benchmark.
-
-The evaluation focuses primarily on:
-
-- **tail latency** (`p95`, `p99`)
-- **throughput** (`QPS`) as a validity check
-- **resource-based cost proxy** expressed as resource-seconds
-
-### Main interpretation goal
-
-The key question is not which autoscaler is universally best, but:
-
-> Under the same application, the same manifests, the same workload patterns, and the same measurement point, how do reactive, proactive, and hybrid autoscaling differ in latency behavior and capacity trade-offs?
-
-### Summary of the thesis findings
-
-At a high level, the thesis evaluation showed that strategy choice materially changes tail-latency stability:
-
-- **Hybrid** performed especially well under predictable day-night style variation
-- **Proactive** performed strongly when capacity was already prepared ahead of bursts
-- **Reactive** remained important as an adaptive correction mechanism, but naturally suffers from scale-up delay compared with pre-provisioned capacity
-
-### Important interpretation note
-
-The strongest evidence in the study concerns **latency behavior**. The resource-based cost metric is intentionally transparent and useful for comparison, but it should not be interpreted as a direct cloud billing estimate.
+| Decision | Rationale |
+|---|---|
+| **Single-node Minikube** | Deliberate constraint — all 4 conditions share identical infrastructure, eliminating node scheduling as a confounding factor. Also turned out to be the object of study. |
+| **Within-subjects design** | Only one cluster is available; the same application runs under all conditions, so fixed hardware differences cancel out. |
+| **3 repetitions per combination** | Follows Kalibera & Jones (2013) — minimum for reliable JVM benchmarks. Reported as mean ± std. |
+| **Script-triggered proactive/hybrid** | Replaces the original CronJob-based scheduling. Scaling is triggered at precisely the right moment relative to workload segments, eliminating timing drift as a confounding variable. |
+| **Fortio over JMeter/k6** | Reports full latency distribution (including p99) per segment without post-processing. |
+| **p99 over mean latency** | Captures the slowest 1% of users — the population that mean latency hides but that autoscaling failures most affect. |
+| **Segment-level aggregation** | One p99 value per segment run keeps the comparison clean; within-segment dynamics would require per-second sampling. |
+| **10 s JVM warmup** | Per Georges et al. (2007) — JIT compilation has not stabilized in the first seconds. |
 
 ---
 
-## Reproducibility Notes
+## Limitations (stated honestly)
 
-MiniShop was designed with reproducibility in mind:
+- **Single-node cluster.** Absolute latency values reflect this specific hardware; the strategy ranking does not generalize to multi-node clusters. The central finding is precisely that strategy effectiveness is infrastructure-dependent.
+- **Synthetic CPU workload.** `work=2` is controlled and reproducible but lighter than real application logic (DB, serialization, business rules).
+- **Minimal business logic.** No DB, no external I/O — production services behave differently.
+- **Two workload patterns only.** Real workloads are more varied (multi-modal, irregular, etc.).
+- **Segment-level p99.** Within-segment transients (JIT warmup of a newly scaled pod) are captured in the aggregate but not isolated temporally.
 
-- fixed microservice topology
-- fixed measurement endpoint
-- fixed resource requests and limits
-- scripted workload execution
-- stored run metadata
-- saved manifests and cluster-state snapshots
-- repeat-based aggregation
 
-This makes the project suitable for:
 
-- thesis verification
-- educational demonstrations
-- autoscaling lab work
-- portfolio presentation of Kubernetes experimentation
+
+
 
 ---
 
-## Limitations
+## Future Work
 
-MiniShop is intentionally minimal and therefore has clear boundaries.
-
-### Included
-
-- microservice-to-microservice communication
-- gateway-based request chaining
-- health, readiness, and startup probes
-- Docker Compose packaging
-- Kubernetes deployment manifests
-- HPA / Cron / hybrid autoscaling logic
-- scripted Fortio-based experiment workflow
-
-### Not included
-
-- persistent database layer
-- service mesh
-- production observability stack
-- distributed tracing
-- cloud-provider billing integration
-- multi-node production calibration
-
-### Experimental limitations
-
-- Minikube is a **single-node** environment
-- Fortio and the application share local hardware resources
-- results support **relative comparison inside the testbed**
-- absolute production latency conclusions should not be drawn from this setup alone
+1. **Multi-node validation** — replicate this experiment on a 3- or 5-node cluster (GKE, EKS) to confirm the ranking reverses back as predicted.
+2. **Custom HPA metrics** — latency-aware or request-rate-based scaling to mitigate the scale-down penalty.
+3. **HPA + VPA combined** — vertical scaling to increase per-pod capacity before scaling horizontally.
+4. **GraalVM native images** — reduce JVM startup overhead and per-pod memory footprint, potentially shifting the contention threshold.
 
 ---
 
-## Author / Thesis Note
+## Acknowledgements
 
-This repository documents the implementation and experiment testbed used in my Master’s thesis on autoscaling strategies for Java microservices on Kubernetes.
+- **First examiner:** Prof. Dr.-Ing. Steffen Kaufmann (HAWK Göttingen)
+- **Second examiner:** M.Sc. Florian Zimmer (Fraunhofer ISST)
 
-It is published both as:
+---
 
-- a reproducible academic project
-- a practical Kubernetes / microservices portfolio project
-- a reference implementation for controlled autoscaling experiments
+*Last updated: March 2026 · Göttingen, Germany*
