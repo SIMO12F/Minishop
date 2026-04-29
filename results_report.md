@@ -165,30 +165,7 @@ Proactive and hybrid cannot sustain the requested QPS during spike:
 
 With 10+ pods on one node, request processing becomes CPU-bound — the system physically cannot process 60 requests/second because CPU is fragmented across too many JVM instances.
 
----
 
-## 4. Data Quality Notes
-
-### 4.1 Missing Repetitions
-
-Four segment files could not be recovered by the JSON parser because Fortio injected log lines (`Successfully wrote ... bytes of Json data to stdout`) into the middle of the JSON output. Of the 72 condition-pattern-segment combinations, 68 contain three valid repetitions; the four affected segments are aggregated from two repetitions each:
-
-- proactive/spike/low_1
-- proactive/spike/spike
-- proactive/daynight/night_1
-- reactive/daynight/night_2
-
-Standard deviations for two-rep groups should be interpreted with additional caution. In each case the two remaining repetitions are consistent with each other and are included in all analyses.
-
-### 4.2 Zero Errors
-
-All 24 completed runs show zero HTTP errors except hybrid/daynight/rep2/day (2 errors out of approximately 2,000 requests in that segment — under 0.1%). All other segments completed with zero HTTP errors. This confirms that throughput differences reflect load saturation and resource contention rather than application failures.
-
-### 4.3 Fortio Retry Behavior
-
-The experiment script included a 3-attempt retry mechanism for Fortio pod failures. Failed attempts produced separate files (`_attempt2`, `_attempt3`) which are excluded from aggregation. The canonical result file always contains the first successful attempt.
-
----
 
 ## 5. Resource Cost Proxy
 
