@@ -6,6 +6,7 @@
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0-green)]()
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-1.34-blue)]()
 [![Minikube](https://img.shields.io/badge/Minikube-1.37-blueviolet)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](./LICENSE)
 
 This repository contains the **MiniShop** testbed and experimental harness for my Master's thesis at HAWK Göttingen (2026): *Evaluating Autoscaling Strategies for Java Microservices on Kubernetes: Reactive vs. Proactive vs. Hybrid*.
 
@@ -22,7 +23,7 @@ On a **single-node** Kubernetes cluster, **horizontal scaling beyond 3–4 pods 
 | Strategy | Pods during spike | P99 spike (ms) | Achieved QPS | Throughput loss |
 |---|---|---|---|---|
 | **Baseline** (fixed 3 pods) | 3 | **291** | **59.8 / 60** | 0.3% |
-| **Reactive** (HPA) | 3–6 | 244 | 59.1 / 60 | 1.5% |
+| **Reactive** (HPA) | 3–14 total (HPA-driven) | 244 | 59.1 / 60 | 1.5% |
 | Proactive (pre-scaled) | 10 | 810 | 27.5 / 60 | **54.2%** |
 | Hybrid (floor + HPA) | 7–14 | 734 | 32.5 / 60 | **45.8%** |
 
@@ -75,11 +76,13 @@ MiniShop is a gateway-based microservice chain. A single request to `GET /api/su
 │   ├── minishop.yaml         Namespace, Deployments, Services, probes, resource limits
 │   └── autoscaling/
 │       ├── reactive-hpa.yaml         HPA for all 3 services (60% CPU target)
-│       ├── proactive-cron.yaml       CronJob-based pre-scaling (legacy — see scripts)
-│       ├── hybrid-cron.yaml          Hybrid floor via CronJob (legacy)
+│       ├── proactive-cron.yaml       (legacy — superseded by script-triggered scaling)
+│       ├── hybrid-cron.yaml          (legacy — superseded by dynamic minReplicas patching)
 │       └── autoscaler-rbac-hpa.yaml  RBAC for dynamic HPA patching
 ├── scripts/
 │   ├── run_patterns_v2.ps1         Main experiment runner (PowerShell)
+│   │                                — proactive: kubectl scale
+│   │                                — hybrid:    kubectl patch on HPA minReplicas
 │   ├── extract_fortio_v6.ps1       Fortio JSON → CSV
 │   └── aggregate_fortio_v6.py      CSV → aggregated results
 ├── plots/
@@ -95,10 +98,11 @@ MiniShop is a gateway-based microservice chain. A single request to `GET /api/su
 │   └── thesis_plots/               Figures for the thesis (generated)
 ├── docker-compose.yml              Local dev: all 3 services without Kubernetes
 ├── results_report.md               Full results analysis
+├── LICENSE                         MIT
 └── README.md                       This file
 ```
 
-**Note:** Earlier experiment iterations (`exp_patterns_minikube_v1`–`v5`, `exp_matrix_minikube_v1`, various `hybrid_*` folders) are kept for traceability but are not referenced by the thesis. The canonical dataset is `exp_patterns_minikube_v6`.
+**Note:** Earlier experiment iterations (`exp_patterns_minikube_v1`–`v5`, `exp_matrix_minikube_v1`, various `hybrid_*` folders) are kept under `results/legacy/` for traceability but are **not** referenced by the thesis. The canonical dataset is `exp_patterns_minikube_v6`.
 
 ---
 
@@ -109,9 +113,9 @@ MiniShop is a gateway-based microservice chain. A single request to `GET /api/su
 | Condition | Mechanism | Pods at rest | Pods under peak load |
 |---|---|---|---|
 | **Baseline** | No autoscaling, fixed replicas | 3 (1+1+1) | 3 |
-| **Reactive** | Kubernetes HPA, CPU target 60% | 3 | 3–6 (HPA-driven) |
+| **Reactive** | Kubernetes HPA, CPU target 60% | 3 | 3–14 total (per-service `maxReplicas`: 6 gateway, 4 product, 4 order) |
 | **Proactive** | Script-triggered `kubectl scale` | 3 | 10 (4+3+3, pre-scaled) |
-| **Hybrid** | HPA + dynamic `minReplicas` floor | 3 | 7–14 (floor 3+2+2 + HPA on top) |
+| **Hybrid** | HPA + dynamic `minReplicas` floor (via `kubectl patch`) | 3 | 7–14 (floor 3+2+2, HPA scales above on top) |
 
 ### Two workload patterns
 
@@ -159,9 +163,9 @@ The scale-down penalty has high run-to-run variance: reactive repetitions range 
 | Strategy | Resource cost (replica-seconds) | vs. baseline | P99 during load |
 |---|---|---|---|
 | Baseline | 450 | 1.0× | **best** |
-| Reactive | ~540–660 | ~1.3× | near-best |
-| Hybrid | ~630–1,050 | ~1.8× | worst |
-| Proactive | 1,080 | **2.4×** | second-worst |
+| Reactive | ~540–930 | ~1.3–1.5× | near-best |
+| Hybrid | ~630–1,470 | ~1.8–2.0× | worst |
+| Proactive | 1,080–1,680 | **2.4–2.7×** | second-worst |
 
 The strategies that consume the most resources produce the worst performance — an inversion specific to single-node infrastructure.
 
@@ -176,7 +180,7 @@ The strategies that consume the most resources produce the worst performance —
 - **Minikube** v1.37+, **kubectl** v1.34+
 - **Java 21 (LTS)**, **Maven 3.9+** (for building service images)
 - **Python 3.10+** with `pandas`, `matplotlib`, `numpy` (for aggregation and plots)
-- Roughly 4 GB free RAM and 2+ CPU cores for Minikube
+- Roughly 4 GB free RAM and 4+ CPU cores for Minikube
 
 ### 1. Start Minikube and enable metrics-server
 
@@ -212,6 +216,8 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 ```
 
 This runs 4 strategies × 2 patterns × 3 repetitions = **24 experiment runs** (~5 hours total). Raw Fortio JSON, per-segment pod/HPA snapshots, and run metadata are written to `results/exp_patterns_minikube_v6/`.
+
+The experiment runner triggers proactive and hybrid scaling directly via `kubectl scale` (proactive) and `kubectl patch` on the HPA's `minReplicas` field (hybrid), at precise timing relative to each workload segment. This replaces the legacy CronJob-based approach in `k8s/autoscaling/proactive-cron.yaml` and `hybrid-cron.yaml`, which is kept for reference only.
 
 ### 4. Aggregate and plot
 
@@ -265,11 +271,6 @@ At 10 QPS this keeps the gateway around ~60 m CPU (right at the HPA threshold wi
 - **Two workload patterns only.** Real workloads are more varied (multi-modal, irregular, etc.).
 - **Segment-level p99.** Within-segment transients (JIT warmup of a newly scaled pod) are captured in the aggregate but not isolated temporally.
 
-
-
-
-
-
 ---
 
 ## Future Work
@@ -281,6 +282,15 @@ At 10 QPS this keeps the gateway around ~60 m CPU (right at the HPA threshold wi
 
 ---
 
+## Citing this Work
+
+If you use this testbed or build on these results, please cite:
+
+> Mbida, M. (2026). *Evaluating Autoscaling Strategies for Java Microservices on Kubernetes:
+> Reactive vs. Proactive vs. Hybrid* [Master's thesis, HAWK Göttingen].
+
+
+
 ## Acknowledgements
 
 - **First examiner:** Prof. Dr.-Ing. Steffen Kaufmann (HAWK Göttingen)
@@ -288,4 +298,4 @@ At 10 QPS this keeps the gateway around ~60 m CPU (right at the HPA threshold wi
 
 ---
 
-*Last updated: March 2026 · Göttingen, Germany*
+*Last updated: April 2026 · Göttingen, Germany*
