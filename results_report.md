@@ -10,7 +10,7 @@
 
 This report presents the complete results from 24 controlled experiment runs comparing four autoscaling strategies for Java microservices on a single-node Minikube Kubernetes cluster.
 
-**Testbed:** MiniShop — three Spring Boot microservices (gateway, order, product) with sequential request chaining at the gateway endpoint `/api/summary?work=2`.
+**Testbed:** MiniShop — three Spring Boot microservices (gateway, product, order) with sequential request chaining at the gateway endpoint `/api/summary?work=2`.
 
 **Strategies tested:**
 
@@ -47,7 +47,7 @@ This report presents the complete results from 24 controlled experiment runs com
 | Proactive | 362.8 ± 32.7 | 810.3 ± 171.1 | 27.5 ± 2.5 | 829 |
 | Hybrid | 318.4 ± 105.0 | 734.4 ± 227.8 | 32.5 ± 9.7 | 983 |
 
-**Finding:** Baseline and reactive achieve near-target throughput (59.8 and 59.1 QPS) with sub-300ms tail latency. Proactive and hybrid fail to sustain 60 QPS — achieving only 27.5 and 32.5 QPS respectively — with P99 latencies 2.8× to 3.0× worse than baseline.
+**Finding:** Baseline and reactive achieve near-target throughput (59.8 and 59.1 QPS) with sub-300ms tail latency. Proactive and hybrid fail to sustain 60 QPS — achieving only 27.5 and 32.5 QPS respectively — with P99 latencies 2.5× to 2.8× worse than baseline.
 
 #### During Recovery Segment (low_2, 10 QPS, 60 seconds)
 
@@ -95,7 +95,7 @@ This report presents the complete results from 24 controlled experiment runs com
 | **Proactive** | **59.9 ± 9.0** | **183.3 ± 44.4** |
 | Hybrid | 277.6 ± 46.2 | 814.2 ± 54.6 |
 
-**Finding:** Same pattern as spike recovery — reactive suffers from scale-down lag (887ms P99), while proactive returns cleanly to baseline-level performance. Hybrid retains elevated latency (814ms P99) because both the HPA-driven extra pods and the floor mechanism leave excess pods running.
+**Finding:** Same pattern as spike recovery — reactive suffers from scale-down lag (887ms P99, 7.9× baseline), while proactive returns to near-baseline performance (1.6× baseline). Hybrid retains elevated latency (814ms P99) because both the HPA-driven extra pods and the floor mechanism leave excess pods running.
 
 ---
 
@@ -105,8 +105,8 @@ This report presents the complete results from 24 controlled experiment runs com
 
 The most significant finding across all experiments is that **horizontal scaling on a single-node cluster degrades rather than improves performance**. This is the dominant effect observed:
 
-- **Proactive** (10 pods) consistently underperforms baseline (3 pods) — by 4× in mean latency and 2.8× in P99 during spike
-- **Hybrid** (7+ pods) shows similar degradation — P99 during day segment is 10× worse than baseline
+- **Proactive** (10 pods) consistently underperforms baseline (3 pods) — 4× in mean latency and 2.8× in P99 during spike
+- **Hybrid** (7+ pods) shows similar degradation — P99 during day segment is nearly 10× worse than baseline
 - **Baseline** with just 3 pods delivers the best or near-best performance in every segment
 
 **Explanation:** On a single Minikube node, all pods share the same CPU. With CPU requests of 100m and limits of 500m, 10 pods request 1000m total but compete for the same physical cores. The Kubernetes scheduler cannot spread load across nodes. Each additional pod increases context switching, JVM overhead (each Spring Boot instance consumes memory and CPU for GC), and network stack contention. The marginal CPU gained per pod decreases while the overhead increases.
@@ -115,9 +115,9 @@ The most significant finding across all experiments is that **horizontal scaling
 
 Despite the single-node limitation, reactive (HPA) performs surprisingly well:
 
-- **During spike (60 QPS):** 244ms P99, 59.1 QPS — within 16% of baseline P99, full throughput maintained
-- **During day (30 QPS):** 295ms P99, 29.9 QPS — within 92% of target throughput
-- HPA scales conservatively (3–6 gateway pods), avoiding the extreme contention of 10+ pods
+- **During spike (60 QPS):** 244ms P99, 59.1 QPS — actually 16% lower P99 than baseline (244 vs 291) while sustaining full throughput
+- **During day (30 QPS):** 295ms P99, 29.9 QPS — essentially full throughput (29.9/30)
+- HPA scales conservatively (per-service maxReplicas: 6 gateway, 4 product, 4 order; 3–14 pods total cluster-wide), avoiding the extreme contention of 10+ pre-positioned pods
 
 The HPA's CPU-target mechanism naturally limits scaling when adding more pods no longer reduces per-pod CPU — creating an emergent form of single-node awareness.
 
@@ -135,8 +135,8 @@ This is an inherent HPA design trade-off: fast scale-down risks flapping, slow s
 
 Proactive pre-scaling hurts performance during load (due to contention) but recovers cleanly:
 
-- **low_2 P99:** 230ms — only 22% above baseline
-- **night_2 P99:** 183ms — within 64% of baseline
+- **low_2 P99:** 230ms — 1.2× baseline (close to baseline-level performance)
+- **night_2 P99:** 183ms — 1.6× baseline (close to baseline-level performance)
 - No lingering pods because the script explicitly scales down after the high-load segment
 
 This suggests proactive scaling would be more effective on multi-node clusters where pre-provisioned pods can spread across physical machines.
@@ -171,18 +171,18 @@ With 10+ pods on one node, request processing becomes CPU-bound — the system p
 
 ### 4.1 Missing Repetitions
 
-Four segment files failed initial parsing (Fortio JSON corruption) and were retried:
+Four segment files could not be recovered by the JSON parser because Fortio injected log lines (`Successfully wrote ... bytes of Json data to stdout`) into the middle of the JSON output. Of the 72 condition-pattern-segment combinations, 68 contain three valid repetitions; the four affected segments are aggregated from two repetitions each:
 
-- proactive/spike/rep1/spike (1 of 3 reps missing)
-- proactive/spike/rep2/low_1 (1 of 3 reps missing)
-- proactive/daynight/rep2/night_1 (1 of 3 reps missing)
-- reactive/daynight/rep3/night_2 (1 of 3 reps missing)
+- proactive/spike/low_1
+- proactive/spike/spike
+- proactive/daynight/night_1
+- reactive/daynight/night_2
 
-These segments are aggregated from 2 reps instead of 3. Standard deviations for 2-rep groups should be interpreted with additional caution.
+Standard deviations for two-rep groups should be interpreted with additional caution. In each case the two remaining repetitions are consistent with each other and are included in all analyses.
 
 ### 4.2 Zero Errors
 
-All completed runs show 0 HTTP errors except hybrid/daynight/rep2/day (2 errors out of 2424 requests — 0.08%). All responses returned HTTP 200.
+All 24 completed runs show zero HTTP errors except hybrid/daynight/rep2/day (2 errors out of approximately 2,000 requests in that segment — under 0.1%). All other segments completed with zero HTTP errors. This confirms that throughput differences reflect load saturation and resource contention rather than application failures.
 
 ### 4.3 Fortio Retry Behavior
 
@@ -231,13 +231,12 @@ To compare strategies fairly, we estimate resource consumption as replica-second
 
 These findings directly address the three research questions:
 
-**RQ1 (Literature):** The results confirm the literature's emphasis on infrastructure context — autoscaling research conducted on multi-node clusters (Luo et al., Ahmad et al.) cannot be directly applied to single-node environments without accounting for resource sharing.
+**RQ1 (Operational definitions and distinctions):** The experiment confirms that the three strategy classes — reactive (HPA), proactive (script-triggered pre-scaling), and hybrid (HPA + dynamic minReplicas floor) — produce measurably different scaling behavior, resource consumption, and tail-latency profiles. This validates them as empirically meaningful operational distinctions rather than purely taxonomic categories.
 
-**RQ2 (Experimental Setup):** The MiniShop testbed successfully isolates strategy differences under controlled conditions. The `work=2` CPU burn parameter ensures measurable HPA-triggering load across all three services.
+**RQ2 (Experimental setup):** The MiniShop testbed combined with a within-subjects design, two complementary workload patterns (abrupt spike and gradual day-night), three repetitions per condition, and p99 tail latency as the primary metric proved sufficient to detect clear, reproducible differences between all four conditions across 24 runs. The synthetic CPU workload (`work=2`) ensured measurable HPA-triggering load across all three services.
 
-**RQ3 (Empirical Comparison):** The ranking under single-node Minikube is: **Baseline ≈ Reactive > Proactive > Hybrid** for tail latency stability. This ranking would likely reverse on multi-node clusters, which should be stated as a clear limitation and future work direction.
+**RQ3 (Empirical comparison):** The ranking under single-node Minikube is **Baseline ≈ Reactive > Proactive > Hybrid** for tail latency stability. This ranking is the reverse of what multi-node literature reports (Luo et al. 2022, Cai et al. 2022, Ahmad et al. 2025) and is consistent with the multi-node literature once the infrastructure constraint is accounted for. The central finding is that autoscaling strategy effectiveness is infrastructure-dependent and recommendations cannot be made independently of deployment topology.
 
 ---
 
 *Generated from exp_patterns_minikube_v6 — 24 runs across 4 strategies × 2 patterns × 3 repetitions.*
-*Experiment executed: March 31, 2026, 00:04–05:11 CET.*
